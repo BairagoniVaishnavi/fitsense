@@ -1,9 +1,9 @@
-# 🏋️ Fitsense Backend
+# Fitsense Backend
 
-## 🚀 Overview
+##  Overview
 A fitness tracking backend built with Node.js, Express, and MongoDB.
 
-## 🔥 Features
+##  Features
 - JWT Authentication
 - Workout Tracking
 - Streak System
@@ -11,13 +11,13 @@ A fitness tracking backend built with Node.js, Express, and MongoDB.
 - Analytics Dashboard
 - Badge System
 
-## 🛠 Tech Stack
+##  Tech Stack
 - Node.js
 - Express.js
 - MongoDB
 - JWT
 
-## 📡 API Endpoints
+##  API Endpoints
 
 ### Auth
 - POST /api/auth/register
@@ -33,7 +33,7 @@ A fitness tracking backend built with Node.js, Express, and MongoDB.
 ### Analytics
 - GET /api/analytics
 
-## ⚙️ Setup
+##  Setup
 
 ```bash
 npm install
