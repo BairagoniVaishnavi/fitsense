@@ -1,4 +1,4 @@
-# FitSense 💪
+# FitSense 
 
 Full-stack fitness tracking app built with:
 - React.js
