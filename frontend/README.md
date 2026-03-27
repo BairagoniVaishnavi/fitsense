@@ -1,16 +1,49 @@
-# React + Vite
+# Workout Tracker Frontend (React JS)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## What this is
+A complete React frontend for your FitSense workout tracker backend:
+- JWT login/register
+- Dashboard
+- Workout CRUD
+- Analytics charts
+- Suggestions form
+- Profile update + password change
 
-Currently, two official plugins are available:
+## Run steps
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Copy `.env.example` to `.env`
+   - Set `VITE_API_BASE_URL=http://localhost:5000/api`
 
-## React Compiler
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+3. Start the app:
+   ```bash
+   npm run dev
+   ```
 
-## Expanding the ESLint configuration
+## Backend endpoints used
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+- `PUT /api/auth/profile`
+- `PUT /api/auth/password`
+- `GET /api/workouts`
+- `POST /api/workouts`
+- `GET /api/workouts/:id`
+- `PUT /api/workouts/:id`
+- `DELETE /api/workouts/:id`
+- `PATCH /api/workouts/:id/favorite`
+- `GET /api/analytics`
+- `GET /api/analytics/overview`
+- `GET /api/analytics/streak`
+- `GET /api/analytics/badges`
+- `POST /api/suggestion`
+- `GET /api/suggestion/types`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Notes
+- The sidebar is hidden on small screens and the layout becomes mobile-friendly.
+- The workout form accepts `exercises` as JSON text for strength sessions.
+- All protected routes expect a JWT in `localStorage.token`.
