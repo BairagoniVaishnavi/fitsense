@@ -1,3 +1,4 @@
+import cors from "cors";
 const express = require('express');
 const cors    = require('cors');
 const morgan  = require('morgan');
@@ -8,8 +9,11 @@ const app = express();
 
 // ── CORS (FIXED) ─────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true,
+  origin: [
+    "http://localhost:5173",
+    "https://fitsense-frontend.onrender.com"
+  ],
+  credentials: true
 }));
 
 // Handle preflight requests (IMPORTANT)
