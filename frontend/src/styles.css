@@ -21,6 +21,7 @@
 
 * {
   box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
 body {
@@ -56,25 +57,27 @@ body {
 }
 
 .grid-2 {
+  display: grid;
   grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 
 .grid-4 {
+  display: grid;
   grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
 }
 
 /* ========================= */
-/* 📌 SIDEBAR (FIXED) */
+/* 📌 SIDEBAR */
 /* ========================= */
 
 .sidebar {
   padding: 20px;
-  background: #0f1a2f;
+  background: var(--panel);
   display: flex;
   flex-direction: column;
 }
-
-/* BRAND */
 
 .brand {
   display: flex;
@@ -93,8 +96,6 @@ body {
   background: linear-gradient(135deg, var(--primary), #9f7cff);
 }
 
-/* USER */
-
 .sidebar-user {
   display: flex;
   align-items: center;
@@ -112,7 +113,7 @@ body {
   justify-content: center;
 }
 
-/* NAVIGATION */
+/* NAV */
 
 .side-nav {
   display: flex;
@@ -149,15 +150,13 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #0f1a2f;
+  background: var(--panel);
 }
 
 .navbar-actions {
   display: flex;
   gap: 10px;
 }
-
-/* LOGOUT */
 
 .logout-btn {
   padding: 8px 14px;
@@ -180,7 +179,7 @@ body {
 .card {
   padding: 20px;
   border-radius: 16px;
-  background: #0f1a2f;
+  background: var(--panel);
   border: 1px solid var(--border);
 }
 
@@ -202,19 +201,13 @@ body {
 }
 
 /* ========================= */
-/* 🏋️ RECENT WORKOUTS */
+/* 🏋️ WORKOUTS */
 /* ========================= */
 
-.recent-list {
+.workout-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.recent-card {
-  padding: 14px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.04);
+  justify-content: space-between;
 }
 
 .recent-top {
@@ -223,13 +216,17 @@ body {
 }
 
 .recent-meta {
-  margin-top: 8px;
+  margin-top: 10px;
   display: flex;
   gap: 12px;
   color: var(--muted);
 }
 
-/* DATE BADGE */
+.workout-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
 
 .date-pill {
   font-size: 12px;
@@ -275,6 +272,54 @@ textarea {
   transform: scale(1.02);
 }
 
+.icon-btn {
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.icon-btn.danger {
+  color: var(--danger);
+}
+
+.icon-btn.danger:hover {
+  background: var(--danger);
+  color: white;
+}
+
+/* ========================= */
+/* 🏆 BADGES */
+/* ========================= */
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.badge-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  min-height: 100px;
+}
+
+.badge-card.unlocked {
+  border: 1px solid rgba(51,214,159,0.4);
+}
+
+.badge-card.locked {
+  opacity: 0.6;
+}
+
 /* ========================= */
 /* 🤖 SUGGESTIONS */
 /* ========================= */
@@ -287,4 +332,32 @@ textarea {
 
 .preset-row button {
   padding: 6px 10px;
-  border-radius
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: none;
+  cursor: pointer;
+}
+
+.exercise {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  margin-top: 8px;
+}
+
+/* ========================= */
+/* 📱 RESPONSIVE */
+/* ========================= */
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-2,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
