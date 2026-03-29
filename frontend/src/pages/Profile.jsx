@@ -6,7 +6,6 @@ import { useAuth } from '../context/AuthContext'
 export default function Profile() {
   const { user, updateProfile, changePassword } = useAuth()
 
-  // ================= PROFILE STATE =================
   const [profileForm, setProfileForm] = useState({
     name: '',
     bio: '',
@@ -14,17 +13,15 @@ export default function Profile() {
     profilePicture: '',
   })
 
-  // ================= PASSWORD STATE =================
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
     newPassword: '',
   })
 
-  // ================= LOADING STATES =================
   const [profileLoading, setProfileLoading] = useState(false)
   const [passwordLoading, setPasswordLoading] = useState(false)
 
-  // ================= FIX: SYNC USER DATA =================
+  // 🔥 Sync user data
   useEffect(() => {
     if (user) {
       setProfileForm({
@@ -36,7 +33,6 @@ export default function Profile() {
     }
   }, [user])
 
-  // ================= HANDLERS =================
   const updateProfileField = (e) => {
     setProfileForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
@@ -45,21 +41,19 @@ export default function Profile() {
     setPasswordForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  // ================= SAVE PROFILE =================
   const saveProfile = async (e) => {
     e.preventDefault()
     try {
       setProfileLoading(true)
       await updateProfile(profileForm)
-      toast.success("Profile updated successfully ")
+      toast.success("Profile updated ")
     } catch {
-      toast.error("Failed to update profile ")
+      toast.error("Update failed ")
     } finally {
       setProfileLoading(false)
     }
   }
 
-  // ================= CHANGE PASSWORD =================
   const savePassword = async (e) => {
     e.preventDefault()
     try {
@@ -71,9 +65,9 @@ export default function Profile() {
         newPassword: '',
       })
 
-      toast.success("Password changed ")
+      toast.success("Password updated ")
     } catch {
-      toast.error("Failed to change password ")
+      toast.error("Failed ")
     } finally {
       setPasswordLoading(false)
     }
@@ -81,84 +75,56 @@ export default function Profile() {
 
   return (
     <motion.div
+      className="profile-wrap"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      style={{ display: "flex", flexDirection: "column", gap: "20px" }}
     >
-      {/* ================= HERO PROFILE ================= */}
-      <div className="card profile-hero">
-        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          
-          <div className="avatar">
+
+      {/* ================= HEADER ================= */}
+      <div className="card profile-header">
+        <div className="profile-left">
+          <div className="profile-avatar">
             {user?.name?.charAt(0)?.toUpperCase() || 'U'}
           </div>
 
           <div>
             <h2>{user?.name}</h2>
-            <p style={{ color: "#aaa" }}>
-              {user?.fitnessGoal || "Fitness Journey"}
+            <p className="muted">
+              {user?.fitnessGoal?.replace('_', ' ') || "Fitness Journey"}
             </p>
 
             <div className="profile-stats">
-              <span> {user?.totalWorkouts || 0} workouts</span>
-              <span> {user?.totalDuration || 0} mins</span>
-              <span> {user?.totalCalories || 0} cal</span>
+              <span>{user?.totalWorkouts || 0} workouts</span>
+              <span>{user?.totalDuration || 0} mins</span>
+              <span>{user?.totalCalories || 0} cal</span>
             </div>
           </div>
         </div>
-
-        <button className="icon-btn">✏️</button>
-      </div>
-
-      {/* ================= GOAL PROGRESS ================= */}
-      <div className="card">
-        <h3>Your Goal </h3>
-        <p>{user?.fitnessGoal || "General Fitness"}</p>
-
-        <div className="progress-bar">
-          <div className="progress" style={{ width: "40%" }}></div>
-        </div>
-
-        <small style={{ color: "#aaa" }}>
-          Keep pushing — you're doing great 
-        </small>
       </div>
 
       {/* ================= MAIN GRID ================= */}
-      <div className="grid-2">
-        
+      <div className="profile-grid">
+
         {/* PROFILE FORM */}
         <section className="card">
           <div className="card-head">
             <h3>Edit Profile</h3>
-            <span className="muted">Update your personal info</span>
+            <span className="muted">Update your info</span>
           </div>
 
-          <form className="form" onSubmit={saveProfile}>
-            <label>
-              Name
+          <form className="form-grid" onSubmit={saveProfile}>
+            <div>
+              <label>Name</label>
               <input
-                className="input"
                 name="name"
                 value={profileForm.name}
                 onChange={updateProfileField}
               />
-            </label>
+            </div>
 
-            <label>
-              Bio
-              <textarea
-                className="input"
-                name="bio"
-                value={profileForm.bio}
-                onChange={updateProfileField}
-              />
-            </label>
-
-            <label>
-              Fitness Goal
+            <div>
+              <label>Fitness Goal</label>
               <select
-                className="input"
                 name="fitnessGoal"
                 value={profileForm.fitnessGoal}
                 onChange={updateProfileField}
@@ -169,65 +135,63 @@ export default function Profile() {
                 <option value="flexibility">Flexibility</option>
                 <option value="general_fitness">General Fitness</option>
               </select>
-            </label>
+            </div>
 
-            <label>
-              Profile Picture URL
+            <div className="full">
+              <label>Bio</label>
+              <textarea
+                name="bio"
+                value={profileForm.bio}
+                onChange={updateProfileField}
+              />
+            </div>
+
+            <div className="full">
+              <label>Profile Picture URL</label>
               <input
-                className="input"
                 name="profilePicture"
                 value={profileForm.profilePicture}
                 onChange={updateProfileField}
               />
-            </label>
+            </div>
 
-            <motion.button
-              className="primary-btn"
-              whileTap={{ scale: 0.95 }}
-              disabled={profileLoading}
-            >
+            <button className="primary-btn full">
               {profileLoading ? "Saving..." : "Save Profile"}
-            </motion.button>
+            </button>
           </form>
         </section>
 
-        {/* PASSWORD SECTION */}
+        {/* PASSWORD */}
         <section className="card">
           <div className="card-head">
             <h3>Security</h3>
-            <span className="muted">Change your password</span>
+            <span className="muted">Change password</span>
           </div>
 
-          <form className="form" onSubmit={savePassword}>
-            <label>
-              Current Password
+          <form className="form-grid" onSubmit={savePassword}>
+            <div className="full">
+              <label>Current Password</label>
               <input
-                className="input"
                 type="password"
                 name="currentPassword"
                 value={passwordForm.currentPassword}
                 onChange={updatePasswordField}
               />
-            </label>
+            </div>
 
-            <label>
-              New Password
+            <div className="full">
+              <label>New Password</label>
               <input
-                className="input"
                 type="password"
                 name="newPassword"
                 value={passwordForm.newPassword}
                 onChange={updatePasswordField}
               />
-            </label>
+            </div>
 
-            <motion.button
-              className="primary-btn"
-              whileTap={{ scale: 0.95 }}
-              disabled={passwordLoading}
-            >
+            <button className="primary-btn full">
               {passwordLoading ? "Updating..." : "Change Password"}
-            </motion.button>
+            </button>
           </form>
         </section>
 
