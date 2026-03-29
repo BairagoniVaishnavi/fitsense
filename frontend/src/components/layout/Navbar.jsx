@@ -13,16 +13,12 @@ export default function Navbar() {
 
       {/* RIGHT SIDE */}
       <div className="navbar-actions">
-  <div className="nav-avatar">
-    {user?.name?.charAt(0)?.toUpperCase()}
-  </div>
+        {/* Avatar */}
+        <div className="nav-avatar">
+          {user?.name?.charAt(0)?.toUpperCase()}
+        </div>
 
-  <button className="logout-btn">
-    Logout
-  </button>
-</div>
-
-        {/* Logout Button */}
+        {/* Logout */}
         <button className="logout-btn" onClick={logout}>
           Logout
         </button>
