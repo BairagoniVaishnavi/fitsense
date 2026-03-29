@@ -13,10 +13,14 @@ export default function Navbar() {
 
       {/* RIGHT SIDE */}
       <div className="navbar-actions">
-        {/* Avatar (clean identity instead of email) */}
-        <div className="nav-avatar">
-          {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-        </div>
+  <div className="nav-avatar">
+    {user?.name?.charAt(0)?.toUpperCase()}
+  </div>
+
+  <button className="logout-btn">
+    Logout
+  </button>
+</div>
 
         {/* Logout Button */}
         <button className="logout-btn" onClick={logout}>
