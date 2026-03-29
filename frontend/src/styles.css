@@ -46,6 +46,28 @@ body {
   min-height: 100vh;
 }
 
+.page-wrap {
+  padding: 24px;
+}
+
+.stack {
+  display: grid;
+  gap: 22px;
+}
+
+.grid {
+  display: grid;
+  gap: 20px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
 /* ========================= */
 /* 📌 SIDEBAR */
 /* ========================= */
@@ -95,53 +117,13 @@ body {
 }
 
 .avatar {
-  width: 44px;
-  height: 44px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: linear-gradient(135deg, #244a8a, #7c9cff);
   display: grid;
   place-items: center;
   font-weight: 700;
-}
-
-.sidebar-user-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.sidebar-user-text strong {
-  font-size: 15px;
-}
-
-.sidebar-user-text span {
-  font-size: 13px;
-  color: var(--muted);
-}
-
-/* NAV */
-
-.side-nav {
-  display: grid;
-  gap: 8px;
-}
-
-.side-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  color: var(--text);
-}
-
-.side-link:hover {
-  background: rgba(124,156,255,0.08);
-  transform: translateX(4px);
-}
-
-.side-link.active {
-  background: rgba(124,156,255,0.15);
 }
 
 /* ========================= */
@@ -162,163 +144,131 @@ body {
   backdrop-filter: blur(16px);
 }
 
-/* 🔥 LOGOUT BUTTON */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* AVATAR */
+
+.nav-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #9f7cff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* LOGOUT */
 
 .logout-btn {
   padding: 10px 16px;
   border-radius: 12px;
   border: 1px solid rgba(255,107,107,0.35);
   background: rgba(255,107,107,0.1);
-  color: #ff6b6b;
+  color: var(--danger);
   cursor: pointer;
   font-weight: 600;
 }
 
 .logout-btn:hover {
-  background: #ff6b6b;
+  background: var(--danger);
   color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(255,107,107,0.4);
+  transform: translateY(-2px);
 }
 
 /* ========================= */
-/* 📄 PAGE */
-/* ========================= */
-
-.page-wrap {
-  padding: 24px;
-}
-
-.stack {
-  display: grid;
-  gap: 22px;
-}
-
-.grid {
-  display: grid;
-  gap: 20px;
-}
-
-.grid-4 {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-/* ========================= */
-/* 📦 CARD (🔥 UPGRADED) */
+/* 📦 CARD */
 /* ========================= */
 
 .card {
   border-radius: 24px;
-  padding: 26px;
-
-  background: linear-gradient(
-    145deg,
-    rgba(255,255,255,0.04),
-    rgba(255,255,255,0.02)
-  );
-
+  padding: 24px;
+  background: rgba(255,255,255,0.04);
   border: 1px solid var(--border);
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.05),
-    0 20px 60px rgba(0,0,0,0.35);
-
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(12px);
 }
 
 .card:hover {
-  transform: translateY(-3px);
-}
-
-/* HEADER INSIDE CARD */
-
-.card-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
+  transform: translateY(-4px);
 }
 
 /* ========================= */
-/* 🧾 FORM IMPROVEMENTS */
+/* 🔘 BUTTONS */
+/* ========================= */
+
+.primary-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  transform: scale(1.02);
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* ========================= */
+/* 🧾 FORMS */
 /* ========================= */
 
 input,
 select,
 textarea {
-  padding: 12px 14px;
+  padding: 12px;
   border-radius: 14px;
   border: 1px solid var(--border);
-
-  background: rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.05);
   color: var(--text);
-  font-size: 14px;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(124,156,255,0.25);
-}
-
-.form-row {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-/* ========================= */
-/* 🔥 RECENT WORKOUTS */
-/* ========================= */
-
-.recent-list {
+.form-grid {
   display: grid;
-  gap: 14px;
-}
-
-.recent-card {
-  padding: 16px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
-}
-
-.recent-card:hover {
-  transform: translateY(-2px);
-}
-
-.recent-top {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.recent-meta {
-  display: flex;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-  color: var(--muted);
 }
 
 /* ========================= */
-/* 🏋️ WORKOUT CARDS */
+/* 🧠 INSIGHTS */
+/* ========================= */
+
+.insight {
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+}
+
+/* ========================= */
+/* 📊 WORKOUT */
 /* ========================= */
 
 .workout-card {
   padding: 18px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
-}
-
-.workout-card:hover {
-  transform: translateY(-3px);
-}
-
-.workout-meta {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.05);
 }
 
 /* ========================= */
@@ -338,7 +288,6 @@ select:focus {
 
 .badge-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
 }
 
@@ -347,12 +296,42 @@ select:focus {
   gap: 14px;
   padding: 16px;
   border-radius: 16px;
-  background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.04);
 }
 
 .badge-card.unlocked {
   border: 1px solid rgba(51,214,159,0.4);
-  background: rgba(51,214,159,0.08);
+}
+
+.badge-card.locked {
+  opacity: 0.6;
+}
+
+/* ========================= */
+/* 🤖 SUGGESTIONS */
+/* ========================= */
+
+.preset-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.preset-row button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: none;
+  cursor: pointer;
+}
+
+.exercise {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  margin-bottom: 8px;
 }
 
 /* ========================= */
@@ -371,6 +350,10 @@ select:focus {
 
 @media (max-width: 760px) {
   .grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-2 {
     grid-template-columns: 1fr;
   }
 }
