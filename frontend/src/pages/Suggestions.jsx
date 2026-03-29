@@ -19,6 +19,17 @@ export default function Suggestions() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // 🔥 PRESET HANDLER
+  const applyPreset = (preset) => {
+    if (preset === "energy") {
+      setForm({ mood: "energetic", energy: 5, availableTime: 45, soreness: "none" });
+    } else if (preset === "recovery") {
+      setForm({ mood: "tired", energy: 2, availableTime: 20, soreness: "moderate" });
+    } else if (preset === "fatburn") {
+      setForm({ mood: "motivated", energy: 4, availableTime: 30, soreness: "mild" });
+    }
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -27,13 +38,11 @@ export default function Suggestions() {
     try {
       const res = await getSuggestion(form);
 
-      // simulate thinking delay (feels AI-like)
       setTimeout(() => {
         setSuggestion(res.data);
         setLoading(false);
         toast.success("Plan generated ✨");
       }, 800);
-
     } catch {
       toast.error("Failed to generate suggestion");
       setLoading(false);
@@ -46,27 +55,36 @@ export default function Suggestions() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      {/* LEFT: FORM */}
+      {/* ================= LEFT: FORM ================= */}
       <section className="card">
         <div className="card-head">
-          <h3>AI Workout Generator</h3>
-          <span className="muted">Smart suggestions based on your state</span>
+          <h3>🤖 AI Workout Generator</h3>
+          <span className="muted">
+            Tell us how you feel — we’ll build your workout
+          </span>
         </div>
 
-        <form className="form" onSubmit={onSubmit}>
-          <label>
-            Mood
-            <select name="mood" value={form.mood} onChange={onChange}>
+        {/* 🔥 PRESETS */}
+        <div className="preset-row">
+          <button onClick={() => applyPreset("energy")}>💪 High Energy</button>
+          <button onClick={() => applyPreset("recovery")}>🧘 Recovery</button>
+          <button onClick={() => applyPreset("fatburn")}>🔥 Fat Burn</button>
+        </div>
+
+        <form className="form-grid" onSubmit={onSubmit}>
+          <div>
+            <label>Mood</label>
+            <select name="mood" value={form.mood} onChange={onChange} className="input">
               <option value="energetic">energetic</option>
               <option value="motivated">motivated</option>
               <option value="neutral">neutral</option>
               <option value="tired">tired</option>
               <option value="stressed">stressed</option>
             </select>
-          </label>
+          </div>
 
-          <label>
-            Energy (1–5)
+          <div>
+            <label>Energy (1–5)</label>
             <input
               type="number"
               min="1"
@@ -74,11 +92,12 @@ export default function Suggestions() {
               name="energy"
               value={form.energy}
               onChange={onChange}
+              className="input"
             />
-          </label>
+          </div>
 
-          <label>
-            Time available (min)
+          <div>
+            <label>Time (minutes)</label>
             <input
               type="number"
               min="5"
@@ -86,45 +105,47 @@ export default function Suggestions() {
               name="availableTime"
               value={form.availableTime}
               onChange={onChange}
+              className="input"
             />
-          </label>
+          </div>
 
-          <label>
-            Soreness
-            <select name="soreness" value={form.soreness} onChange={onChange}>
+          <div>
+            <label>Soreness</label>
+            <select name="soreness" value={form.soreness} onChange={onChange} className="input">
               <option value="none">none</option>
               <option value="mild">mild</option>
               <option value="moderate">moderate</option>
               <option value="severe">severe</option>
             </select>
-          </label>
+          </div>
 
-          <button className="btn primary" disabled={loading}>
-            {loading ? "Thinking..." : "Generate Plan"}
+          <button className="primary-btn" disabled={loading}>
+            {loading ? "⚡ Generating..." : "⚡ Generate Workout"}
           </button>
         </form>
       </section>
 
-      {/* RIGHT: RESULT */}
+      {/* ================= RIGHT: RESULT ================= */}
       <section className="card">
         <div className="card-head">
-          <h3>Generated Plan</h3>
+          <h3>Your Plan 🔥</h3>
         </div>
 
         <AnimatePresence mode="wait">
-          {/* LOADING STATE */}
+
+          {/* LOADING */}
           {loading && (
             <motion.div
               key="loading"
+              className="center-screen"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="center-screen"
             >
               <div>
                 <div className="spinner"></div>
                 <p className="muted" style={{ marginTop: 10 }}>
-                  Analyzing your condition...
+                  AI is building your workout...
                 </p>
               </div>
             </motion.div>
@@ -136,8 +157,7 @@ export default function Suggestions() {
               key="result"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="suggestion-box"
+              className="generated-plan"
             >
               <h4>{suggestion.title || "Workout Plan"}</h4>
 
@@ -146,30 +166,32 @@ export default function Suggestions() {
               </p>
 
               {suggestion.exercises && (
-                <div className="chip-row">
+                <div style={{ marginTop: "12px" }}>
                   {suggestion.exercises.map((ex, i) => (
-                    <span key={i} className="chip">
-                      {typeof ex === "string" ? ex : ex.name}
-                    </span>
+                    <div key={i} className="exercise">
+                      <span>{typeof ex === "string" ? ex : ex.name}</span>
+                      <span className="muted">3 sets</span>
+                    </div>
                   ))}
                 </div>
               )}
             </motion.div>
           )}
 
-          {/* EMPTY STATE */}
+          {/* EMPTY */}
           {!loading && !suggestion && (
             <motion.div
               key="empty"
+              className="center-screen"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="center-screen"
             >
               <p className="muted">
-                Fill the form to generate your workout 🧠
+                ⚡ Your AI workout will appear here
               </p>
             </motion.div>
           )}
+
         </AnimatePresence>
       </section>
     </motion.div>
