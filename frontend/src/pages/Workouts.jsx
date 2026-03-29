@@ -93,8 +93,8 @@ export default function Workouts() {
 
               {/* META */}
               <div className="recent-meta">
-                <span>⏱ {w.duration} min</span>
-                <span>🔥 {w.calories} cal</span>
+                <span> {w.duration} min</span>
+                <span> {w.calories} cal</span>
               </div>
 
               {/* ACTIONS */}
