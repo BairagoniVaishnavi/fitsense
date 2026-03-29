@@ -1,285 +1,133 @@
-import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import toast from "react-hot-toast";
+import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
+import { FiEdit, FiTrash2 } from "react-icons/fi"
+import toast from "react-hot-toast"
 
-import {
-  createWorkout,
-  deleteWorkout,
-  getWorkouts,
-  toggleFavorite,
-  updateWorkout,
-} from "../api/workoutApi";
+import { getWorkouts, deleteWorkout } from "../api/workouts"
 
 export default function Workouts() {
-  const [workouts, setWorkouts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState("");
+  const [workouts, setWorkouts] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const [form, setForm] = useState({
-    title: "",
-    type: "cardio",
-    duration: "",
-    calories: "",
-    intensity: "medium",
-    date: "",
-  });
-
-  const [editingId, setEditingId] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-
-  // ================= LOAD =================
-  const load = async () => {
+  // ================= FETCH WORKOUTS =================
+  const fetchWorkouts = async () => {
     try {
-      setLoading(true);
-      const res = await getWorkouts();
-      setWorkouts(res.data || []);
-    } catch (err) {
-      toast.error("Failed to load workouts");
+      setLoading(true)
+      const data = await getWorkouts()
+      setWorkouts(data || [])
+    } catch {
+      toast.error("Failed to load workouts ❌")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    load();
-  }, []);
-
-  // ================= SEARCH =================
-  const filtered = useMemo(() => {
-    return workouts.filter((w) =>
-      w.title.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [workouts, search]);
-
-  // ================= FORM =================
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const resetForm = () => {
-    setForm({
-      title: "",
-      type: "cardio",
-      duration: "",
-      calories: "",
-      intensity: "medium",
-      date: "",
-    });
-    setEditingId(null);
-  };
-
-  // ================= SUBMIT =================
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const payload = {
-      title: form.title.trim(),
-      type: form.type.toLowerCase(),
-      duration: Number(form.duration),
-      calories: Number(form.calories),
-      intensity: form.intensity,
-      date: new Date(form.date).toISOString(),
-    };
-
-    // 🔥 VALIDATION
-    if (
-      !payload.title ||
-      !payload.duration ||
-      !payload.calories ||
-      !form.date
-    ) {
-      toast.error("Please fill all required fields");
-      return;
-    }
-
-    try {
-      if (editingId) {
-        await updateWorkout(editingId, payload);
-        toast.success("Workout updated ✅");
-      } else {
-        await createWorkout(payload);
-        toast.success("Workout added 💪");
-      }
-
-      resetForm();
-      setShowModal(false);
-      load();
-    } catch (err) {
-      console.log(err?.response?.data);
-      toast.error(err?.response?.data?.message || "Something went wrong");
-    }
-  };
+    fetchWorkouts()
+  }, [])
 
   // ================= DELETE =================
   const handleDelete = async (id) => {
     try {
-      await deleteWorkout(id);
-      toast.error("Workout deleted 🗑️");
-      load();
+      await deleteWorkout(id)
+      toast.success("Workout deleted 🗑️")
+      fetchWorkouts()
     } catch {
-      toast.error("Delete failed");
+      toast.error("Failed to delete ❌")
     }
-  };
+  }
 
-  // ================= FAVORITE =================
-  const handleFavorite = async (id) => {
-    try {
-      await toggleFavorite(id);
-      toast.success("Updated ❤️");
-      load();
-    } catch {
-      toast.error("Failed to update");
-    }
-  };
-
-  // ================= EDIT =================
-  const handleEdit = (w) => {
-    setForm({
-      title: w.title || "",
-      type: w.type || "cardio",
-      duration: w.duration || "",
-      calories: w.calories || "",
-      intensity: w.intensity || "medium",
-      date: w.date ? w.date.slice(0, 10) : "",
-    });
-    setEditingId(w._id);
-    setShowModal(true);
-  };
+  // ================= DATE FORMAT =================
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
+  }
 
   return (
-    <motion.div
-      className="page-wrap"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-      {/* HEADER */}
-      <div className="card">
-        <h2>Workouts</h2>
+    <div className="grid" style={{ gap: "16px" }}>
+      <h2>Recent Workouts 🏋️</h2>
 
-        <div className="filters">
-          <input
-            placeholder="Search workouts..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-
-          <button className="btn primary" onClick={() => setShowModal(true)}>
-            + Add Workout
-          </button>
-        </div>
-      </div>
-
-      {/* LIST */}
       {loading ? (
-        <div className="card">Loading workouts… ⏳</div>
-      ) : filtered.length === 0 ? (
+        <p>Loading...</p>
+      ) : workouts.length === 0 ? (
         <div className="card">
-          <h3>No workouts yet 😔</h3>
-          <p className="muted">Start by adding your first workout 💪</p>
+          <p>No workouts yet. Start your journey 💪</p>
         </div>
       ) : (
-        <div className="grid two-col">
-          {filtered.map((w) => (
-            <motion.div
-              key={w._id}
-              className="card workout-card"
-              whileHover={{ scale: 1.02 }}
-            >
-              <h3>{w.title}</h3>
-
-              <div className="workout-meta">
-                <span className="chip">{w.type}</span>
-                <span className="chip">{w.duration} min</span>
-                <span className="chip">{w.calories} cal</span>
-              </div>
-
-              <div className="action-row">
-                <button onClick={() => handleEdit(w)}>✏️</button>
-                <button onClick={() => handleDelete(w._id)}>🗑</button>
-                <button onClick={() => handleFavorite(w._id)}>
-                  {w.isFavorite ? "❤️" : "🤍"}
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      )}
-
-      {/* MODAL */}
-      {showModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>{editingId ? "Edit Workout" : "Add Workout"}</h3>
-
-            <form className="form" onSubmit={handleSubmit}>
-              <input
-                name="title"
-                value={form.title}
-                onChange={handleChange}
-                placeholder="Title"
-                required
-              />
-
-              {/* ✅ TYPE DROPDOWN */}
-              <select name="type" value={form.type} onChange={handleChange}>
-                <option value="cardio">cardio</option>
-                <option value="strength">strength</option>
-                <option value="yoga">yoga</option>
-                <option value="cycling">cycling</option>
-              </select>
-
-              <input
-                type="number"
-                name="duration"
-                value={form.duration}
-                onChange={handleChange}
-                placeholder="Duration (min)"
-              />
-
-              <input
-                type="number"
-                name="calories"
-                value={form.calories}
-                onChange={handleChange}
-                placeholder="Calories"
-              />
-
-              {/* ✅ INTENSITY DROPDOWN */}
-              <select
-                name="intensity"
-                value={form.intensity}
-                onChange={handleChange}
-              >
-                <option value="low">low</option>
-                <option value="medium">medium</option>
-                <option value="high">high</option>
-              </select>
-
-              {/* ✅ DATE FIX */}
-              <input
-                type="date"
-                name="date"
-                value={form.date}
-                onChange={handleChange}
-              />
-
-              <button className="btn primary">
-                {editingId ? "Update" : "Add"}
-              </button>
-            </form>
-
-            <button
-              className="btn"
-              onClick={() => {
-                resetForm();
-                setShowModal(false);
+        workouts.map((w) => (
+          <motion.div
+            key={w._id}
+            className="card"
+            whileHover={{ scale: 1.02 }}
+          >
+            {/* TOP ROW */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
-              Close
-            </button>
-          </div>
-        </div>
+              <div>
+                <h3>{w.title}</h3>
+                <p style={{ color: "#aaa", fontSize: "14px" }}>
+                  {w.category} • {w.intensity}
+                </p>
+              </div>
+
+              {/* DATE */}
+              <div
+                style={{
+                  fontSize: "12px",
+                  color: "#aaa",
+                  background: "rgba(255,255,255,0.05)",
+                  padding: "6px 10px",
+                  borderRadius: "10px",
+                }}
+              >
+                {formatDate(w.date)}
+              </div>
+            </div>
+
+            {/* DETAILS */}
+            <div
+              style={{
+                marginTop: "10px",
+                display: "flex",
+                gap: "12px",
+                fontSize: "13px",
+                color: "#ccc",
+              }}
+            >
+              <span>⏱ {w.duration} min</span>
+              <span>🔥 {w.calories} cal</span>
+            </div>
+
+            {/* ACTION BUTTONS */}
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                marginTop: "12px",
+              }}
+            >
+              <button className="icon-btn">
+                <FiEdit />
+              </button>
+
+              <button
+                className="icon-btn"
+                onClick={() => handleDelete(w._id)}
+              >
+                <FiTrash2 />
+              </button>
+            </div>
+          </motion.div>
+        ))
       )}
-    </motion.div>
-  );
+    </div>
+  )
 }
