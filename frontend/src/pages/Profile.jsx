@@ -1,7 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import toast from "react-hot-toast"
-
 import { useAuth } from '../context/AuthContext'
 
 export default function Profile() {
@@ -9,10 +8,10 @@ export default function Profile() {
 
   // ================= PROFILE STATE =================
   const [profileForm, setProfileForm] = useState({
-    name: user?.name || '',
-    bio: user?.bio || '',
-    fitnessGoal: user?.fitnessGoal || 'general_fitness',
-    profilePicture: user?.profilePicture || '',
+    name: '',
+    bio: '',
+    fitnessGoal: 'general_fitness',
+    profilePicture: '',
   })
 
   // ================= PASSWORD STATE =================
@@ -24,6 +23,18 @@ export default function Profile() {
   // ================= LOADING STATES =================
   const [profileLoading, setProfileLoading] = useState(false)
   const [passwordLoading, setPasswordLoading] = useState(false)
+
+  // ================= FIX: SYNC USER DATA =================
+  useEffect(() => {
+    if (user) {
+      setProfileForm({
+        name: user.name || '',
+        bio: user.bio || '',
+        fitnessGoal: user.fitnessGoal || 'general_fitness',
+        profilePicture: user.profilePicture || '',
+      })
+    }
+  }, [user])
 
   // ================= HANDLERS =================
   const updateProfileField = (e) => {
@@ -37,13 +48,12 @@ export default function Profile() {
   // ================= SAVE PROFILE =================
   const saveProfile = async (e) => {
     e.preventDefault()
-
     try {
       setProfileLoading(true)
       await updateProfile(profileForm)
-      toast.success("Profile updated successfully ✅")
+      toast.success("Profile updated successfully ")
     } catch {
-      toast.error("Failed to update profile ❌")
+      toast.error("Failed to update profile ")
     } finally {
       setProfileLoading(false)
     }
@@ -52,7 +62,6 @@ export default function Profile() {
   // ================= CHANGE PASSWORD =================
   const savePassword = async (e) => {
     e.preventDefault()
-
     try {
       setPasswordLoading(true)
       await changePassword(passwordForm)
@@ -62,9 +71,9 @@ export default function Profile() {
         newPassword: '',
       })
 
-      toast.success("Password changed 🔐")
+      toast.success("Password changed ")
     } catch {
-      toast.error("Failed to change password ❌")
+      toast.error("Failed to change password ")
     } finally {
       setPasswordLoading(false)
     }
@@ -72,112 +81,157 @@ export default function Profile() {
 
   return (
     <motion.div
-      className="grid two-col"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      style={{ display: "flex", flexDirection: "column", gap: "20px" }}
     >
-      {/* ================= PROFILE SECTION ================= */}
-      <section className="card">
-        <div className="card-head">
-          <h3>Profile</h3>
-          <span className="muted">Update your personal info</span>
+      {/* ================= HERO PROFILE ================= */}
+      <div className="card profile-hero">
+        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+          
+          <div className="avatar">
+            {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+          </div>
+
+          <div>
+            <h2>{user?.name}</h2>
+            <p style={{ color: "#aaa" }}>
+              {user?.fitnessGoal || "Fitness Journey"}
+            </p>
+
+            <div className="profile-stats">
+              <span> {user?.totalWorkouts || 0} workouts</span>
+              <span> {user?.totalDuration || 0} mins</span>
+              <span> {user?.totalCalories || 0} cal</span>
+            </div>
+          </div>
         </div>
 
-        <form className="form" onSubmit={saveProfile}>
-          <label>
-            Name
-            <input
-              name="name"
-              value={profileForm.name}
-              onChange={updateProfileField}
-              placeholder="Enter your name"
-            />
-          </label>
+        <button className="icon-btn">✏️</button>
+      </div>
 
-          <label>
-            Bio
-            <textarea
-              name="bio"
-              value={profileForm.bio}
-              onChange={updateProfileField}
-              placeholder="Tell something about yourself"
-            />
-          </label>
+      {/* ================= GOAL PROGRESS ================= */}
+      <div className="card">
+        <h3>Your Goal </h3>
+        <p>{user?.fitnessGoal || "General Fitness"}</p>
 
-          <label>
-            Fitness Goal
-            <select
-              name="fitnessGoal"
-              value={profileForm.fitnessGoal}
-              onChange={updateProfileField}
+        <div className="progress-bar">
+          <div className="progress" style={{ width: "40%" }}></div>
+        </div>
+
+        <small style={{ color: "#aaa" }}>
+          Keep pushing — you're doing great 
+        </small>
+      </div>
+
+      {/* ================= MAIN GRID ================= */}
+      <div className="grid-2">
+        
+        {/* PROFILE FORM */}
+        <section className="card">
+          <div className="card-head">
+            <h3>Edit Profile</h3>
+            <span className="muted">Update your personal info</span>
+          </div>
+
+          <form className="form" onSubmit={saveProfile}>
+            <label>
+              Name
+              <input
+                className="input"
+                name="name"
+                value={profileForm.name}
+                onChange={updateProfileField}
+              />
+            </label>
+
+            <label>
+              Bio
+              <textarea
+                className="input"
+                name="bio"
+                value={profileForm.bio}
+                onChange={updateProfileField}
+              />
+            </label>
+
+            <label>
+              Fitness Goal
+              <select
+                className="input"
+                name="fitnessGoal"
+                value={profileForm.fitnessGoal}
+                onChange={updateProfileField}
+              >
+                <option value="weight_loss">Weight Loss</option>
+                <option value="muscle_gain">Muscle Gain</option>
+                <option value="endurance">Endurance</option>
+                <option value="flexibility">Flexibility</option>
+                <option value="general_fitness">General Fitness</option>
+              </select>
+            </label>
+
+            <label>
+              Profile Picture URL
+              <input
+                className="input"
+                name="profilePicture"
+                value={profileForm.profilePicture}
+                onChange={updateProfileField}
+              />
+            </label>
+
+            <motion.button
+              className="primary-btn"
+              whileTap={{ scale: 0.95 }}
+              disabled={profileLoading}
             >
-              <option value="weight_loss">Weight Loss</option>
-              <option value="muscle_gain">Muscle Gain</option>
-              <option value="endurance">Endurance</option>
-              <option value="flexibility">Flexibility</option>
-              <option value="general_fitness">General Fitness</option>
-            </select>
-          </label>
+              {profileLoading ? "Saving..." : "Save Profile"}
+            </motion.button>
+          </form>
+        </section>
 
-          <label>
-            Profile Picture URL
-            <input
-              name="profilePicture"
-              value={profileForm.profilePicture}
-              onChange={updateProfileField}
-              placeholder="Paste image URL"
-            />
-          </label>
+        {/* PASSWORD SECTION */}
+        <section className="card">
+          <div className="card-head">
+            <h3>Security</h3>
+            <span className="muted">Change your password</span>
+          </div>
 
-          <motion.button
-            className="btn primary"
-            whileTap={{ scale: 0.95 }}
-            disabled={profileLoading}
-          >
-            {profileLoading ? "Saving..." : "Save Profile"}
-          </motion.button>
-        </form>
-      </section>
+          <form className="form" onSubmit={savePassword}>
+            <label>
+              Current Password
+              <input
+                className="input"
+                type="password"
+                name="currentPassword"
+                value={passwordForm.currentPassword}
+                onChange={updatePasswordField}
+              />
+            </label>
 
-      {/* ================= PASSWORD SECTION ================= */}
-      <section className="card">
-        <div className="card-head">
-          <h3>Security</h3>
-          <span className="muted">Change your password</span>
-        </div>
+            <label>
+              New Password
+              <input
+                className="input"
+                type="password"
+                name="newPassword"
+                value={passwordForm.newPassword}
+                onChange={updatePasswordField}
+              />
+            </label>
 
-        <form className="form" onSubmit={savePassword}>
-          <label>
-            Current Password
-            <input
-              type="password"
-              name="currentPassword"
-              value={passwordForm.currentPassword}
-              onChange={updatePasswordField}
-              placeholder="Enter current password"
-            />
-          </label>
+            <motion.button
+              className="primary-btn"
+              whileTap={{ scale: 0.95 }}
+              disabled={passwordLoading}
+            >
+              {passwordLoading ? "Updating..." : "Change Password"}
+            </motion.button>
+          </form>
+        </section>
 
-          <label>
-            New Password
-            <input
-              type="password"
-              name="newPassword"
-              value={passwordForm.newPassword}
-              onChange={updatePasswordField}
-              placeholder="Enter new password"
-            />
-          </label>
-
-          <motion.button
-            className="btn primary"
-            whileTap={{ scale: 0.95 }}
-            disabled={passwordLoading}
-          >
-            {passwordLoading ? "Updating..." : "Change Password"}
-          </motion.button>
-        </form>
-      </section>
+      </div>
     </motion.div>
   )
 }
