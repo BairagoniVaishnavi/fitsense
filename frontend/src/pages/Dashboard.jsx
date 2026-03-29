@@ -1,15 +1,22 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 
-import Card from '../components/common/Card'
 import { getOverview } from '../api/analyticsApi'
 import { getWorkouts } from '../api/workoutApi'
 
-//  Format helper (IMPORTANT)
+// 🔥 FORMAT HELPER
 const formatText = (value = '') => {
   return value
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+// 🔥 DATE FORMAT
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+  })
 }
 
 export default function Dashboard() {
@@ -41,12 +48,39 @@ export default function Dashboard() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
+
+      {/* ================= INSIGHTS (NEW 🔥) ================= */}
+      <section className="grid-2">
+        <div className="insight">
+          🔥 You’ve completed {overview?.totalWorkouts ?? 0} workouts — keep going!
+        </div>
+
+        <div className="insight">
+          ⚡ Current streak: {overview?.currentStreak ?? 0} days
+        </div>
+      </section>
+
       {/* ================= STATS ================= */}
-      <section className="grid grid-4">
-        <Card title="Workouts" value={overview?.totalWorkouts ?? 0} />
-        <Card title="Calories" value={overview?.totalCalories ?? 0} />
-        <Card title="Duration" value={`${overview?.totalDuration ?? 0} min`} />
-        <Card title="Streak" value={`${overview?.currentStreak ?? 0} days`} />
+      <section className="grid-4">
+        <div className="card stat-card">
+          <p>Workouts</p>
+          <h2>{overview?.totalWorkouts ?? 0}</h2>
+        </div>
+
+        <div className="card stat-card">
+          <p>Calories</p>
+          <h2>{overview?.totalCalories ?? 0}</h2>
+        </div>
+
+        <div className="card stat-card">
+          <p>Duration</p>
+          <h2>{overview?.totalDuration ?? 0} min</h2>
+        </div>
+
+        <div className="card stat-card">
+          <p>Streak</p>
+          <h2>{overview?.currentStreak ?? 0} days</h2>
+        </div>
       </section>
 
       {/* ================= RECENT WORKOUTS ================= */}
@@ -66,24 +100,25 @@ export default function Dashboard() {
                 className="recent-card"
                 whileHover={{ scale: 1.02 }}
               >
-                {/* TOP ROW */}
+                {/* TOP */}
                 <div className="recent-top">
                   <div>
                     <h4>{w.title}</h4>
+
                     <p className="muted">
                       {formatText(w.type)} • {formatText(w.intensity || 'medium')}
                     </p>
                   </div>
 
-                  <span className="chip">
-                    {new Date(w.date).toLocaleDateString()}
-                  </span>
+                  <div className="date-pill">
+                    {formatDate(w.date)}
+                  </div>
                 </div>
 
-                {/* BOTTOM META */}
+                {/* META */}
                 <div className="recent-meta">
-                  <span> {w.duration} min</span>
-                  <span> {w.calories} cal</span>
+                  <span>⏱ {w.duration} min</span>
+                  <span>🔥 {w.calories} cal</span>
                 </div>
               </motion.div>
             ))}
