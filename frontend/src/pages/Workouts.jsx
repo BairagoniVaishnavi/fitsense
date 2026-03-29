@@ -13,8 +13,10 @@ export default function Workouts() {
   const fetchWorkouts = async () => {
     try {
       setLoading(true)
-      const data = await getWorkouts()
-      setWorkouts(data || [])
+      const res = await getWorkouts()
+
+      // ✅ FIX: handle API response properly
+      setWorkouts(res?.data || [])
     } catch {
       toast.error("Failed to load workouts ❌")
     } finally {
@@ -46,88 +48,72 @@ export default function Workouts() {
     })
   }
 
-  return (
-    <div className="grid" style={{ gap: "16px" }}>
-      <h2>Recent Workouts 🏋️</h2>
+  // ================= LOADING =================
+  if (loading) {
+    return <div className="card">Loading workouts...</div>
+  }
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : workouts.length === 0 ? (
+  return (
+    <motion.div
+      className="stack"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <div className="card-head">
+        <h2>🏋️ Your Workouts</h2>
+        <span className="muted">{workouts.length} sessions</span>
+      </div>
+
+      {/* EMPTY STATE */}
+      {workouts.length === 0 ? (
         <div className="card">
-          <p>No workouts yet. Start your journey 💪</p>
+          <p className="muted">No workouts yet. Start your journey 💪</p>
         </div>
       ) : (
-        workouts.map((w) => (
-          <motion.div
-            key={w._id}
-            className="card"
-            whileHover={{ scale: 1.02 }}
-          >
-            {/* TOP ROW */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
+        <div className="grid-2">
+          {workouts.map((w) => (
+            <motion.div
+              key={w._id}
+              className="card workout-card"
+              whileHover={{ scale: 1.02 }}
             >
-              <div>
-                <h3>{w.title}</h3>
-                <p style={{ color: "#aaa", fontSize: "14px" }}>
-                  {w.category} • {w.intensity}
-                </p>
+              {/* TOP */}
+              <div className="recent-top">
+                <div>
+                  <h3>{w.title}</h3>
+                  <p className="muted">
+                    {w.category} • {w.intensity}
+                  </p>
+                </div>
+
+                <div className="date-pill">
+                  {formatDate(w.date)}
+                </div>
               </div>
 
-              {/* DATE */}
-              <div
-                style={{
-                  fontSize: "12px",
-                  color: "#aaa",
-                  background: "rgba(255,255,255,0.05)",
-                  padding: "6px 10px",
-                  borderRadius: "10px",
-                }}
-              >
-                {formatDate(w.date)}
+              {/* META */}
+              <div className="recent-meta">
+                <span>⏱ {w.duration} min</span>
+                <span>🔥 {w.calories} cal</span>
               </div>
-            </div>
 
-            {/* DETAILS */}
-            <div
-              style={{
-                marginTop: "10px",
-                display: "flex",
-                gap: "12px",
-                fontSize: "13px",
-                color: "#ccc",
-              }}
-            >
-              <span>⏱ {w.duration} min</span>
-              <span>🔥 {w.calories} cal</span>
-            </div>
+              {/* ACTIONS */}
+              <div className="workout-actions">
+                <button className="icon-btn">
+                  <FiEdit />
+                </button>
 
-            {/* ACTION BUTTONS */}
-            <div
-              style={{
-                display: "flex",
-                gap: "10px",
-                marginTop: "12px",
-              }}
-            >
-              <button className="icon-btn">
-                <FiEdit />
-              </button>
-
-              <button
-                className="icon-btn"
-                onClick={() => handleDelete(w._id)}
-              >
-                <FiTrash2 />
-              </button>
-            </div>
-          </motion.div>
-        ))
+                <button
+                  className="icon-btn danger"
+                  onClick={() => handleDelete(w._id)}
+                >
+                  <FiTrash2 />
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       )}
-    </div>
+    </motion.div>
   )
 }
