@@ -36,28 +36,6 @@ body {
   color: var(--text);
 }
 
-a {
-  color: var(--primary);
-  text-decoration: none;
-}
-
-/* ========================= */
-/* 🔄 SPINNER */
-/* ========================= */
-
-.spinner {
-  width: 46px;
-  height: 46px;
-  border-radius: 999px;
-  border: 4px solid rgba(255,255,255,0.15);
-  border-top-color: var(--primary);
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 /* ========================= */
 /* 🧱 LAYOUT */
 /* ========================= */
@@ -81,6 +59,8 @@ a {
   justify-content: space-between;
 }
 
+/* BRAND */
+
 .brand {
   display: flex;
   gap: 14px;
@@ -98,17 +78,7 @@ a {
   font-weight: 800;
 }
 
-.brand h1,
-.card h3 {
-  margin: 0;
-}
-
-.brand p,
-.muted {
-  color: var(--muted);
-}
-
-/* USER CARD */
+/* USER */
 
 .sidebar-user {
   border-radius: 20px;
@@ -122,7 +92,6 @@ a {
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
 
-  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }
 
@@ -136,7 +105,24 @@ a {
   font-weight: 700;
 }
 
-/* NAVIGATION */
+/* 🔥 NEW FIX */
+
+.sidebar-user-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-user-text strong {
+  font-size: 15px;
+}
+
+.sidebar-user-text span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* NAV */
 
 .side-nav {
   display: grid;
@@ -150,8 +136,6 @@ a {
   padding: 14px 16px;
   border-radius: 14px;
   color: var(--text);
-  border: 1px solid transparent;
-  font-weight: 500;
 }
 
 .side-link:hover {
@@ -161,12 +145,6 @@ a {
 
 .side-link.active {
   background: rgba(124,156,255,0.15);
-  border-color: rgba(124,156,255,0.25);
-}
-
-.sidebar-foot {
-  color: var(--muted);
-  font-size: 13px;
 }
 
 /* ========================= */
@@ -174,19 +152,34 @@ a {
 /* ========================= */
 
 .navbar {
-  margin: 24px 24px 0;
+  margin: 24px;
   padding: 18px 22px;
   border-radius: 22px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
 
   background: rgba(15,26,47,0.8);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
+}
 
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
+/* 🔥 LOGOUT BUTTON FIX */
+
+.logout-btn {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,107,107,0.35);
+  background: rgba(255,107,107,0.1);
+  color: #ff6b6b;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout-btn:hover {
+  background: #ff6b6b;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(255,107,107,0.4);
 }
 
 /* ========================= */
@@ -211,10 +204,6 @@ a {
   grid-template-columns: repeat(4, 1fr);
 }
 
-.two-col {
-  grid-template-columns: repeat(2, 1fr);
-}
-
 /* ========================= */
 /* 📦 CARD */
 /* ========================= */
@@ -227,13 +216,43 @@ a {
   box-shadow: var(--shadow);
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+/* ========================= */
+/* 🔥 RECENT WORKOUTS FIX */
+/* ========================= */
+
+.recent-list {
+  display: grid;
+  gap: 14px;
+}
+
+.recent-card {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+}
+
+.recent-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.recent-meta {
+  display: flex;
+  gap: 16px;
+  color: var(--muted);
+}
+
+.chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(124,156,255,0.15);
+  font-size: 12px;
 }
 
 /* ========================= */
-/* 🏆 BADGES (🔥 NEW UPGRADE) */
+/* 🏆 BADGES */
 /* ========================= */
 
 .badge-grid {
@@ -244,138 +263,15 @@ a {
 
 .badge-card {
   display: flex;
-  align-items: center;
   gap: 14px;
   padding: 16px;
   border-radius: 16px;
-  border: 1px solid var(--border);
   background: rgba(255,255,255,0.03);
 }
 
-.badge-icon {
-  font-size: 28px;
-}
-
-/* unlocked */
 .badge-card.unlocked {
-  border-color: rgba(51,214,159,0.4);
+  border: 1px solid rgba(51,214,159,0.4);
   background: rgba(51,214,159,0.08);
-}
-
-.badge-card.unlocked:hover {
-  box-shadow: 0 0 20px rgba(51,214,159,0.4);
-}
-
-/* locked */
-.badge-card.locked {
-  opacity: 0.5;
-  filter: grayscale(1);
-}
-
-/* ========================= */
-/* 🧾 FORMS */
-/* ========================= */
-
-.form {
-  display: grid;
-  gap: 14px;
-}
-
-label {
-  display: grid;
-  gap: 8px;
-  font-size: 14px;
-  color: #d9e3ff;
-}
-
-input,
-select,
-textarea {
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: #0b1528;
-  color: var(--text);
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(124,156,255,0.2);
-}
-
-/* ========================= */
-/* 🔘 BUTTONS */
-/* ========================= */
-
-.btn {
-  border-radius: 14px;
-  padding: 12px 16px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn.primary {
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  color: white;
-}
-
-.btn.danger {
-  background: rgba(255,107,107,0.14);
-  color: #ffd4d4;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(99,102,241,0.4);
-}
-
-/* ========================= */
-/* 🪟 AUTH */
-/* ========================= */
-
-.auth-shell {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-}
-
-.auth-panel {
-  width: min(420px, 100%);
-  border-radius: 24px;
-  padding: 28px;
-
-  background: rgba(15,26,47,0.85);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-}
-
-/* ========================= */
-/* 🪟 MODAL */
-/* ========================= */
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content {
-  background: #0f1a2f;
-  padding: 24px;
-  border-radius: 20px;
-  width: 400px;
 }
 
 /* ========================= */
@@ -386,19 +282,13 @@ select:focus {
   .app-shell {
     grid-template-columns: 1fr;
   }
-
   .sidebar {
     display: none;
   }
 }
 
 @media (max-width: 760px) {
-  .grid-4,
-  .two-col {
+  .grid-4 {
     grid-template-columns: 1fr;
-  }
-
-  .page-wrap {
-    padding: 16px;
   }
 }
