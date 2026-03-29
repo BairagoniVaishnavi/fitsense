@@ -66,9 +66,9 @@ export default function Suggestions() {
 
         {/* 🔥 PRESETS */}
         <div className="preset-row">
-          <button onClick={() => applyPreset("energy")}>💪 High Energy</button>
-          <button onClick={() => applyPreset("recovery")}>🧘 Recovery</button>
-          <button onClick={() => applyPreset("fatburn")}>🔥 Fat Burn</button>
+          <button onClick={() => applyPreset("energy")}> High Energy</button>
+          <button onClick={() => applyPreset("recovery")}> Recovery</button>
+          <button onClick={() => applyPreset("fatburn")}> Fat Burn</button>
         </div>
 
         <form className="form-grid" onSubmit={onSubmit}>
@@ -128,7 +128,7 @@ export default function Suggestions() {
       {/* ================= RIGHT: RESULT ================= */}
       <section className="card">
         <div className="card-head">
-          <h3>Your Plan 🔥</h3>
+          <h3>Your Plan </h3>
         </div>
 
         <AnimatePresence mode="wait">
@@ -162,7 +162,7 @@ export default function Suggestions() {
               <h4>{suggestion.title || "Workout Plan"}</h4>
 
               <p className="muted">
-                {suggestion.description || "Stay consistent 💪"}
+                {suggestion.description || "Stay consistent "}
               </p>
 
               {suggestion.exercises && (
