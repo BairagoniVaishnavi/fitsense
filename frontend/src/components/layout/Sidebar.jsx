@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
-//  Icons
 import {
   FiHome,
   FiActivity,
@@ -10,7 +9,6 @@ import {
   FiUser,
 } from 'react-icons/fi'
 
-//  Links with icons
 const links = [
   { to: '/', label: 'Dashboard', icon: <FiHome /> },
   { to: '/workouts', label: 'Workouts', icon: <FiActivity /> },
@@ -19,7 +17,7 @@ const links = [
   { to: '/profile', label: 'Profile', icon: <FiUser /> },
 ]
 
-//  Format function (KEY FIX)
+// 🔥 Clean formatter
 const formatText = (value = '') => {
   return value
     .replace(/_/g, ' ')
@@ -31,33 +29,32 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar">
-      {/* ================= TOP SECTION ================= */}
+      {/* ================= TOP ================= */}
       <div>
         {/* BRAND */}
         <div className="brand">
           <div className="brand-mark">F</div>
           <div>
             <h1>FitSense</h1>
-            <p>Track. Improve. Repeat.</p>
+            <p className="muted small">Track. Improve. Repeat.</p>
           </div>
         </div>
 
         {/* ================= USER ================= */}
         <div className="sidebar-user">
           <div className="avatar">
-            {user?.name?.slice(0, 1)?.toUpperCase() || 'U'}
+            {user?.name?.charAt(0)?.toUpperCase() || 'U'}
           </div>
 
-          {/*  FIXED TEXT BLOCK */}
           <div className="sidebar-user-text">
-            <strong>{formatText(user?.name || 'User')}</strong>
+            <strong>{user?.name || 'User'}</strong>
             <span className="muted small">
               {formatText(user?.fitnessGoal || 'general_fitness')}
             </span>
           </div>
         </div>
 
-        {/* ================= NAVIGATION ================= */}
+        {/* ================= NAV ================= */}
         <nav className="side-nav">
           {links.map((link) => (
             <NavLink
@@ -69,15 +66,15 @@ export default function Sidebar() {
               }
             >
               <span className="icon">{link.icon}</span>
-              {link.label}
+              <span>{link.label}</span>
             </NavLink>
           ))}
         </nav>
       </div>
 
       {/* ================= FOOTER ================= */}
-      <div className="sidebar-foot">
-        <span>Built for real gains </span>
+      <div className="sidebar-foot muted small">
+        Built for real gains 💪
       </div>
     </aside>
   )
