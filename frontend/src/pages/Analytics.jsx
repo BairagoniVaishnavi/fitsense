@@ -24,24 +24,60 @@ export default function Analytics() {
 
   if (loading) return <div className="card">Loading analytics…</div>
 
+  // ================= DERIVED INSIGHTS =================
+  const avgDuration = data?.overview?.avgDurationPerWorkout ?? 0
+  const avgCalories = data?.overview?.avgCaloriesPerWorkout ?? 0
+  const streak = data?.streak?.longestStreak ?? 0
+
   return (
     <motion.div
       className="stack"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
+
+      {/* ================= INSIGHTS (NEW 🔥) ================= */}
+      <section className="grid-2">
+        <div className="insight">
+           {streak > 3 
+            ? "You're building a strong streak — keep it going!" 
+            : "Start a streak — consistency is key!"}
+        </div>
+
+        <div className="insight">
+          ⏱ Avg workout: {avgDuration} min
+        </div>
+
+        <div className="insight">
+          ⚡ Avg calories burned: {avgCalories}
+        </div>
+
+        <div className="insight">
+           Stay consistent to unlock more achievements
+        </div>
+      </section>
+
       {/* ================= STATS ================= */}
       <section className="grid grid-4">
-        <Card title="Avg calories" value={data?.overview?.avgCaloriesPerWorkout ?? 0} />
-        <Card title="Avg duration" value={`${data?.overview?.avgDurationPerWorkout ?? 0} min`} />
+        <Card title="Avg calories" value={avgCalories} />
+        <Card title="Avg duration" value={`${avgDuration} min`} />
         <Card title="Max calories" value={data?.overview?.maxCaloriesInWorkout ?? 0} />
-        <Card title="Longest streak" value={`${data?.streak?.longestStreak ?? 0} days`} />
+        <Card title="Longest streak" value={`${streak} days`} />
       </section>
 
       {/* ================= CHARTS ================= */}
       <section className="grid two-col">
-        <ActivityChart data={data?.weeklyActivity || []} />
-        <TrendChart data={data?.monthlyTrend || []} />
+        <div className="card">
+          <h3>Weekly Activity 📊</h3>
+          <p className="muted">Your workout consistency this week</p>
+          <ActivityChart data={data?.weeklyActivity || []} />
+        </div>
+
+        <div className="card">
+          <h3>Monthly Trend 📈</h3>
+          <p className="muted">Track your long-term progress</p>
+          <TrendChart data={data?.monthlyTrend || []} />
+        </div>
       </section>
 
       {/* ================= BADGES ================= */}
@@ -54,7 +90,7 @@ export default function Analytics() {
         </div>
 
         <div className="badge-grid">
-          {/* 🔥 UNLOCKED BADGES */}
+          {/* UNLOCKED */}
           {(data?.badges || []).map((badge) => (
             <motion.div
               key={badge.id}
@@ -72,7 +108,7 @@ export default function Analytics() {
             </motion.div>
           ))}
 
-          {/* 🔒 LOCKED BADGES (STATIC FOR NOW) */}
+          {/* LOCKED WITH FEELING */}
           <motion.div
             className="badge-card locked"
             whileHover={{ scale: 1.02 }}
@@ -81,6 +117,7 @@ export default function Analytics() {
             <div>
               <h4>Consistency King</h4>
               <p className="muted">Workout 7 days in a row</p>
+              <small className="muted">Progress: {streak}/7 days</small>
             </div>
           </motion.div>
 
@@ -92,6 +129,7 @@ export default function Analytics() {
             <div>
               <h4>Beast Mode</h4>
               <p className="muted">Burn 1000+ calories in one session</p>
+              <small className="muted">Keep pushing </small>
             </div>
           </motion.div>
         </div>
