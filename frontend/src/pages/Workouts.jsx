@@ -3,7 +3,7 @@ import { motion } from "framer-motion"
 import { FiEdit, FiTrash2 } from "react-icons/fi"
 import toast from "react-hot-toast"
 
-import { getWorkouts, deleteWorkout } from "../api/workoutsApi"
+import { getWorkouts, deleteWorkout } from "../api/workoutApi"
 
 export default function Workouts() {
   const [workouts, setWorkouts] = useState([])
