@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { FiEdit, FiTrash2 } from "react-icons/fi"
+import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi"
 import toast from "react-hot-toast"
 
 import { getWorkouts, deleteWorkout } from "../api/workoutApi"
@@ -14,8 +14,6 @@ export default function Workouts() {
     try {
       setLoading(true)
       const res = await getWorkouts()
-
-      // ✅ FIX: handle API response properly
       setWorkouts(res?.data || [])
     } catch {
       toast.error("Failed to load workouts ❌")
@@ -59,9 +57,22 @@ export default function Workouts() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <div className="card-head">
-        <h2>🏋️ Your Workouts</h2>
-        <span className="muted">{workouts.length} sessions</span>
+
+      {/* 🔥 HEADER WITH BUTTON */}
+      <div className="workout-header">
+        <div>
+          <h2>🏋️ Your Workouts</h2>
+          <span className="muted">{workouts.length} sessions</span>
+        </div>
+
+        {/* ADD BUTTON */}
+        <button
+          className="primary-btn"
+          onClick={() => toast("Add workout feature coming soon 🚀")}
+        >
+          <FiPlus style={{ marginRight: "6px" }} />
+          Add Workout
+        </button>
       </div>
 
       {/* EMPTY STATE */}
@@ -93,8 +104,8 @@ export default function Workouts() {
 
               {/* META */}
               <div className="recent-meta">
-                <span> {w.duration} min</span>
-                <span> {w.calories} cal</span>
+                <span>⏱ {w.duration} min</span>
+                <span>🔥 {w.calories} cal</span>
               </div>
 
               {/* ACTIONS */}
