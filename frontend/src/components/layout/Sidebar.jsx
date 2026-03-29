@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
-// ✅ Icons
+//  Icons
 import {
   FiHome,
   FiActivity,
@@ -10,7 +10,7 @@ import {
   FiUser,
 } from 'react-icons/fi'
 
-// 🔥 Updated links with icons
+//  Links with icons
 const links = [
   { to: '/', label: 'Dashboard', icon: <FiHome /> },
   { to: '/workouts', label: 'Workouts', icon: <FiActivity /> },
@@ -18,6 +18,13 @@ const links = [
   { to: '/suggestions', label: 'Suggestions', icon: <FiZap /> },
   { to: '/profile', label: 'Profile', icon: <FiUser /> },
 ]
+
+//  Format function (KEY FIX)
+const formatText = (value = '') => {
+  return value
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+}
 
 export default function Sidebar() {
   const { user } = useAuth()
@@ -35,19 +42,22 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* USER */}
+        {/* ================= USER ================= */}
         <div className="sidebar-user">
           <div className="avatar">
             {user?.name?.slice(0, 1)?.toUpperCase() || 'U'}
           </div>
 
-          <div>
-            <strong>{user?.name || 'User'}</strong>
-            <span>{user?.fitnessGoal || 'general_fitness'}</span>
+          {/*  FIXED TEXT BLOCK */}
+          <div className="sidebar-user-text">
+            <strong>{formatText(user?.name || 'User')}</strong>
+            <span className="muted small">
+              {formatText(user?.fitnessGoal || 'general_fitness')}
+            </span>
           </div>
         </div>
 
-        {/* NAVIGATION */}
+        {/* ================= NAVIGATION ================= */}
         <nav className="side-nav">
           {links.map((link) => (
             <NavLink
@@ -67,7 +77,7 @@ export default function Sidebar() {
 
       {/* ================= FOOTER ================= */}
       <div className="sidebar-foot">
-        <span>Built for real gains 💪</span>
+        <span>Built for real gains </span>
       </div>
     </aside>
   )
