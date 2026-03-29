@@ -91,7 +91,6 @@ body {
   background: rgba(15,26,47,0.8);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
-
   backdrop-filter: blur(16px);
 }
 
@@ -104,8 +103,6 @@ body {
   place-items: center;
   font-weight: 700;
 }
-
-/* 🔥 NEW FIX */
 
 .sidebar-user-text {
   display: flex;
@@ -157,13 +154,15 @@ body {
   border-radius: 22px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
-  background: rgba(15,26,47,0.8);
+  background: rgba(15,26,47,0.85);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
 }
 
-/* 🔥 LOGOUT BUTTON FIX */
+/* 🔥 LOGOUT BUTTON */
 
 .logout-btn {
   padding: 10px 16px;
@@ -192,7 +191,7 @@ body {
 
 .stack {
   display: grid;
-  gap: 20px;
+  gap: 22px;
 }
 
 .grid {
@@ -205,19 +204,72 @@ body {
 }
 
 /* ========================= */
-/* 📦 CARD */
+/* 📦 CARD (🔥 UPGRADED) */
 /* ========================= */
 
 .card {
   border-radius: 24px;
-  padding: 22px;
-  background: rgba(255,255,255,0.03);
+  padding: 26px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.04),
+    rgba(255,255,255,0.02)
+  );
+
   border: 1px solid var(--border);
-  box-shadow: var(--shadow);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 20px 60px rgba(0,0,0,0.35);
+
+  backdrop-filter: blur(14px);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+/* HEADER INSIDE CARD */
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
 }
 
 /* ========================= */
-/* 🔥 RECENT WORKOUTS FIX */
+/* 🧾 FORM IMPROVEMENTS */
+/* ========================= */
+
+input,
+select,
+textarea {
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  font-size: 14px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(124,156,255,0.25);
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ========================= */
+/* 🔥 RECENT WORKOUTS */
 /* ========================= */
 
 .recent-list {
@@ -228,8 +280,12 @@ body {
 .recent-card {
   padding: 16px;
   border-radius: 18px;
-  background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.04);
   border: 1px solid var(--border);
+}
+
+.recent-card:hover {
+  transform: translateY(-2px);
 }
 
 .recent-top {
@@ -244,10 +300,35 @@ body {
   color: var(--muted);
 }
 
+/* ========================= */
+/* 🏋️ WORKOUT CARDS */
+/* ========================= */
+
+.workout-card {
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+}
+
+.workout-card:hover {
+  transform: translateY(-3px);
+}
+
+.workout-meta {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* ========================= */
+/* 🏷 CHIP */
+/* ========================= */
+
 .chip {
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(124,156,255,0.15);
+  background: rgba(124,156,255,0.12);
   font-size: 12px;
 }
 
@@ -282,6 +363,7 @@ body {
   .app-shell {
     grid-template-columns: 1fr;
   }
+
   .sidebar {
     display: none;
   }
