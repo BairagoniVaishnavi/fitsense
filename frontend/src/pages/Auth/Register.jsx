@@ -58,7 +58,7 @@ export default function Register() {
     try {
       await register(form)
 
-      toast.success("Account created 🎉")
+      toast.success("Account created ")
       navigate("/")
     } catch (err) {
       const msg = err?.message || "Registration failed"
@@ -77,7 +77,7 @@ export default function Register() {
         animate={{ opacity: 1, y: 0 }}
       >
         <p className="eyebrow">FitSense</p>
-        <h1>Create Account ✨</h1>
+        <h1>Create Account </h1>
         <p className="muted">Start your fitness journey today.</p>
 
         <form className="form" onSubmit={onSubmit}>
