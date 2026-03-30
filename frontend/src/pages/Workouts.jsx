@@ -17,10 +17,9 @@ export default function Workouts() {
   const [showModal, setShowModal] = useState(false)
   const [editId, setEditId] = useState(null)
 
-  // 🔥 FIXED: category → type
   const [form, setForm] = useState({
     title: "",
-    type: "cardio",          // ✅ IMPORTANT FIX
+    type: "cardio",
     intensity: "medium",
     duration: "",
     calories: "",
@@ -62,7 +61,7 @@ export default function Workouts() {
     setEditId(null)
     setForm({
       title: "",
-      type: "cardio",       // ✅ FIXED
+      type: "cardio",
       intensity: "medium",
       duration: "",
       calories: "",
@@ -72,18 +71,19 @@ export default function Workouts() {
   // ================= ADD / EDIT =================
   const handleSave = async () => {
     try {
-      if (!form.title || !form.duration || !form.calories) {
-        return toast.error("Fill all fields ⚠️")
+      if (!form.title || !form.duration || !form.calories || !form.type) {
+        return toast.error("All fields required ⚠️")
       }
 
-      // 🔥 FIXED PAYLOAD
       const payload = {
-        title: form.title,
-        type: form.type,                    // ✅ REQUIRED BY BACKEND
+        title: form.title.trim(),
+        type: form.type,
         intensity: form.intensity,
         duration: Number(form.duration),
         calories: Number(form.calories),
       }
+
+      console.log("🚀 PAYLOAD:", payload)
 
       if (editId) {
         const updated = await updateWorkout(editId, payload)
@@ -98,13 +98,16 @@ export default function Workouts() {
 
         setWorkouts((prev) => [newWorkout, ...prev])
 
-        toast.success("Added 💪")
+        toast.success("Workout added 💪")
       }
 
       closeModal()
     } catch (err) {
-      console.error("FULL ERROR:", err.response?.data || err.message)
-      toast.error("Failed ❌")
+      console.error("❌ FULL ERROR:", err.response?.data || err.message)
+
+      toast.error(
+        err.response?.data?.message || "Failed to add workout ❌"
+      )
     }
   }
 
@@ -114,7 +117,7 @@ export default function Workouts() {
 
     setForm({
       title: w.title || "",
-      type: w.type || "cardio",      // ✅ FIXED
+      type: w.type || "cardio",
       intensity: w.intensity || "medium",
       duration: w.duration || "",
       calories: w.calories || "",
@@ -126,11 +129,8 @@ export default function Workouts() {
   if (loading) return <div className="card">Loading...</div>
 
   return (
-    <motion.div
-      className="stack"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
+    <motion.div className="stack" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+
       {/* HEADER */}
       <div className="workout-header">
         <div>
@@ -152,11 +152,10 @@ export default function Workouts() {
             <motion.div
               key={w._id}
               className="card workout-card"
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.03 }}
             >
               <h3>{w.title}</h3>
 
-              {/* 🔥 FIXED DISPLAY */}
               <p className="muted">
                 {w.type} • {w.intensity}
               </p>
@@ -167,10 +166,7 @@ export default function Workouts() {
               </div>
 
               <div className="workout-actions">
-                <button
-                  className="icon-btn"
-                  onClick={() => openEdit(w)}
-                >
+                <button className="icon-btn" onClick={() => openEdit(w)}>
                   <FiEdit />
                 </button>
 
@@ -191,34 +187,37 @@ export default function Workouts() {
         <div className="modal">
           <motion.div
             className="modal-box"
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
           >
             <h3>{editId ? "Edit Workout" : "Add Workout"}</h3>
 
             <input
-              placeholder="Title"
+              placeholder="Workout title"
               value={form.title}
               onChange={(e) =>
                 setForm({ ...form, title: e.target.value })
               }
             />
 
-            {/* 🔥 OPTIONAL TYPE SELECT (RECOMMENDED) */}
+            {/* 🔥 TYPE IS NOW CLEAR + REQUIRED */}
             <select
               value={form.type}
               onChange={(e) =>
                 setForm({ ...form, type: e.target.value })
               }
             >
+              <option value="">Select Type</option>
               <option value="cardio">Cardio</option>
               <option value="strength">Strength</option>
               <option value="hiit">HIIT</option>
               <option value="yoga">Yoga</option>
+              <option value="cycling">Cycling</option>
+              <option value="sports">Sports</option>
             </select>
 
             <input
-              placeholder="Duration (min)"
+              placeholder="Duration (minutes)"
               value={form.duration}
               onChange={(e) =>
                 setForm({ ...form, duration: e.target.value })
@@ -226,7 +225,7 @@ export default function Workouts() {
             />
 
             <input
-              placeholder="Calories"
+              placeholder="Calories burned"
               value={form.calories}
               onChange={(e) =>
                 setForm({ ...form, calories: e.target.value })
