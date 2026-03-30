@@ -91,7 +91,7 @@ export default function Suggestions() {
       {/* LEFT SIDE */}
       <section className="card suggestion-card">
         <div className="card-head">
-          <h3>🤖 AI Workout Generator</h3>
+          <h3> AI Workout Generator</h3>
           <p className="muted">Tell us how you feel</p>
         </div>
 
