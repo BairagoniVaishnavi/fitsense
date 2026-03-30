@@ -1,5 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { getCurrentUser, loginUser, registerUser, updateProfile as apiUpdateProfile, changePassword as apiChangePassword } from '../api/authApi'
+import {
+  getCurrentUser,
+  loginUser,
+  registerUser,
+  updateProfile as apiUpdateProfile,
+  changePassword as apiChangePassword
+} from '../api/authApi'
 
 const AuthContext = createContext(null)
 
@@ -16,8 +22,8 @@ export function AuthProvider({ children }) {
       }
       try {
         const res = await getCurrentUser()
-        setUser(res.data)
-      } catch (err) {
+        setUser(res.data?.data) // ✅ FIXED
+      } catch {
         localStorage.removeItem('token')
         setToken('')
         setUser(null)
@@ -30,23 +36,29 @@ export function AuthProvider({ children }) {
 
   const login = async (payload) => {
     const res = await loginUser(payload)
-    const nextToken = res.data?.token || ''
+
+    const nextToken = res.data?.data?.token || '' // ✅ FIXED
+
     if (nextToken) {
       localStorage.setItem('token', nextToken)
       setToken(nextToken)
-      setUser(res.data)
+      setUser(res.data?.data) // ✅ FIXED
     }
+
     return res
   }
 
   const register = async (payload) => {
     const res = await registerUser(payload)
-    const nextToken = res.data?.token || ''
+
+    const nextToken = res.data?.data?.token || '' // ✅ FIXED
+
     if (nextToken) {
       localStorage.setItem('token', nextToken)
       setToken(nextToken)
-      setUser(res.data)
+      setUser(res.data?.data) // ✅ FIXED
     }
+
     return res
   }
 
@@ -58,7 +70,7 @@ export function AuthProvider({ children }) {
 
   const updateProfile = async (payload) => {
     const res = await apiUpdateProfile(payload)
-    setUser(res.data)
+    setUser(res.data?.data)
     return res
   }
 
