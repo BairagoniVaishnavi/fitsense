@@ -1,42 +1,39 @@
-import api from './axios'
+import api from "./axios"
 
-// 🔥 normalize everything
+// ================= SAFE NORMALIZER =================
 const normalize = (res) => {
-  return res?.data || res?.workouts || res || []
+  if (Array.isArray(res)) return res
+  if (Array.isArray(res?.data)) return res.data
+  if (Array.isArray(res?.workouts)) return res.workouts
+  return []
 }
 
 // ================= GET ALL =================
 export const getWorkouts = async (params = {}) => {
-  const { data } = await api.get('/workouts', { params })
-  return normalize(data)
+  const res = await api.get("/workouts", { params })
+  return normalize(res.data)
 }
 
 // ================= GET ONE =================
 export const getWorkout = async (id) => {
-  const { data } = await api.get(`/workouts/${id}`)
-  return data?.data || data
+  const res = await api.get(`/workouts/${id}`)
+  return res.data?.data || res.data
 }
 
 // ================= CREATE =================
 export const createWorkout = async (payload) => {
-  const { data } = await api.post('/workouts', payload)
-  return data?.data || data
+  const res = await api.post("/workouts", payload)
+  return res.data?.data || res.data
 }
 
 // ================= UPDATE =================
 export const updateWorkout = async (id, payload) => {
-  const { data } = await api.put(`/workouts/${id}`, payload)
-  return data?.data || data
+  const res = await api.put(`/workouts/${id}`, payload)
+  return res.data?.data || res.data
 }
 
 // ================= DELETE =================
 export const deleteWorkout = async (id) => {
-  const { data } = await api.delete(`/workouts/${id}`)
-  return data?.data || data
-}
-
-// ================= FAVORITE =================
-export const toggleFavorite = async (id) => {
-  const { data } = await api.patch(`/workouts/${id}/favorite`)
-  return data?.data || data
+  const res = await api.delete(`/workouts/${id}`)
+  return res.data?.data || res.data
 }
