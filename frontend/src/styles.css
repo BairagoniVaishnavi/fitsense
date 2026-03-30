@@ -585,7 +585,7 @@ textarea {
   }
 }
 
-/* 👇 PASTE EVERYTHING HERE 👇 */
+
 
 /* WORKOUT HEADER */
 .workout-header {
@@ -605,5 +605,50 @@ textarea {
   grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
+/* ===== SUGGESTIONS UPGRADE ===== */
 
-/* ...rest of code */
+.plan-title {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.plan-desc {
+  margin-bottom: 12px;
+}
+
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exercise-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+}
+
+.tag {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(124,156,255,0.2);
+  color: var(--primary);
+}
+
+/* better layout */
+.suggestions-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* mobile fix */
+@media (max-width: 768px) {
+  .suggestions-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
