@@ -6,17 +6,18 @@ import toast from "react-hot-toast"
 import {
   getWorkouts,
   deleteWorkout,
-  createWorkout
+  createWorkout,
+  updateWorkout,
 } from "../api/workoutApi"
 
 export default function Workouts() {
   const [workouts, setWorkouts] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // 🔥 MODAL STATE
+  // modal + edit
   const [showModal, setShowModal] = useState(false)
+  const [editId, setEditId] = useState(null)
 
-  // 🔥 FORM STATE
   const [form, setForm] = useState({
     title: "",
     category: "cardio",
@@ -25,12 +26,12 @@ export default function Workouts() {
     calories: "",
   })
 
-  // ================= FETCH WORKOUTS =================
+  // ================= FETCH =================
   const fetchWorkouts = async () => {
     try {
       setLoading(true)
       const res = await getWorkouts()
-      setWorkouts(res?.data || [])
+      setWorkouts(res || []) // ✅ FIXED
     } catch {
       toast.error("Failed to load workouts ❌")
     } finally {
@@ -46,25 +47,34 @@ export default function Workouts() {
   const handleDelete = async (id) => {
     try {
       await deleteWorkout(id)
-      toast.success("Workout deleted 🗑️")
-      fetchWorkouts()
+      setWorkouts((prev) => prev.filter((w) => w._id !== id))
+      toast.success("Deleted 🗑️")
     } catch {
-      toast.error("Failed to delete ❌")
+      toast.error("Failed ❌")
     }
   }
 
-  // ================= ADD WORKOUT =================
-  const handleAddWorkout = async () => {
+  // ================= ADD / EDIT =================
+  const handleSave = async () => {
     try {
       if (!form.title || !form.duration || !form.calories) {
-        return toast.error("Please fill all fields ⚠️")
+        return toast.error("Fill all fields ⚠️")
       }
 
-      await createWorkout(form)
+      if (editId) {
+        const updated = await updateWorkout(editId, form)
+        setWorkouts((prev) =>
+          prev.map((w) => (w._id === editId ? updated : w))
+        )
+        toast.success("Updated ✏️")
+      } else {
+        const newWorkout = await createWorkout(form)
+        setWorkouts((prev) => [newWorkout, ...prev])
+        toast.success("Added 💪")
+      }
 
-      toast.success("Workout added 💪")
-
-      // reset form
+      setShowModal(false)
+      setEditId(null)
       setForm({
         title: "",
         category: "cardio",
@@ -72,76 +82,42 @@ export default function Workouts() {
         duration: "",
         calories: "",
       })
-
-      setShowModal(false)
-      fetchWorkouts()
     } catch {
-      toast.error("Failed to add workout ❌")
+      toast.error("Failed ❌")
     }
   }
 
-  // ================= DATE FORMAT =================
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    })
+  const openEdit = (w) => {
+    setEditId(w._id)
+    setForm(w)
+    setShowModal(true)
   }
 
-  // ================= LOADING =================
-  if (loading) {
-    return <div className="card">Loading workouts...</div>
-  }
+  if (loading) return <div className="card">Loading...</div>
 
   return (
-    <motion.div
-      className="stack"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-
-      {/* 🔥 HEADER */}
+    <motion.div className="stack" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      {/* HEADER */}
       <div className="workout-header">
         <div>
           <h2>🏋️ Your Workouts</h2>
           <span className="muted">{workouts.length} sessions</span>
         </div>
 
-        <button
-          className="primary-btn"
-          onClick={() => setShowModal(true)}
-        >
-          <FiPlus style={{ marginRight: "6px" }} />
-          Add Workout
+        <button className="primary-btn" onClick={() => setShowModal(true)}>
+          <FiPlus /> Add Workout
         </button>
       </div>
 
-      {/* EMPTY STATE */}
+      {/* EMPTY */}
       {workouts.length === 0 ? (
-        <div className="card">
-          <p className="muted">No workouts yet. Start your journey 💪</p>
-        </div>
+        <div className="card">No workouts yet 💪</div>
       ) : (
         <div className="grid-2">
           {workouts.map((w) => (
-            <motion.div
-              key={w._id}
-              className="card workout-card"
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="recent-top">
-                <div>
-                  <h3>{w.title}</h3>
-                  <p className="muted">
-                    {w.category} • {w.intensity}
-                  </p>
-                </div>
-
-                <div className="date-pill">
-                  {formatDate(w.date)}
-                </div>
-              </div>
+            <motion.div key={w._id} className="card workout-card" whileHover={{ scale: 1.02 }}>
+              <h3>{w.title}</h3>
+              <p className="muted">{w.category} • {w.intensity}</p>
 
               <div className="recent-meta">
                 <span>⏱ {w.duration} min</span>
@@ -149,14 +125,11 @@ export default function Workouts() {
               </div>
 
               <div className="workout-actions">
-                <button className="icon-btn">
+                <button className="icon-btn" onClick={() => openEdit(w)}>
                   <FiEdit />
                 </button>
 
-                <button
-                  className="icon-btn danger"
-                  onClick={() => handleDelete(w._id)}
-                >
+                <button className="icon-btn danger" onClick={() => handleDelete(w._id)}>
                   <FiTrash2 />
                 </button>
               </div>
@@ -165,78 +138,23 @@ export default function Workouts() {
         </div>
       )}
 
-      {/* 🔥 ADD WORKOUT MODAL */}
+      {/* MODAL */}
       {showModal && (
         <div className="modal">
           <div className="modal-box">
+            <h3>{editId ? "Edit Workout" : "Add Workout"}</h3>
 
-            <h3>Add Workout</h3>
-
-            <input
-              placeholder="Workout Title"
-              value={form.title}
-              onChange={(e) =>
-                setForm({ ...form, title: e.target.value })
-              }
-            />
-
-            <input
-              placeholder="Duration (minutes)"
-              value={form.duration}
-              onChange={(e) =>
-                setForm({ ...form, duration: e.target.value })
-              }
-            />
-
-            <input
-              placeholder="Calories"
-              value={form.calories}
-              onChange={(e) =>
-                setForm({ ...form, calories: e.target.value })
-              }
-            />
-
-            <select
-              value={form.category}
-              onChange={(e) =>
-                setForm({ ...form, category: e.target.value })
-              }
-            >
-              <option value="cardio">Cardio</option>
-              <option value="strength">Strength</option>
-            </select>
-
-            <select
-              value={form.intensity}
-              onChange={(e) =>
-                setForm({ ...form, intensity: e.target.value })
-              }
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
+            <input placeholder="Title" value={form.title} onChange={(e)=>setForm({...form,title:e.target.value})}/>
+            <input placeholder="Duration" value={form.duration} onChange={(e)=>setForm({...form,duration:e.target.value})}/>
+            <input placeholder="Calories" value={form.calories} onChange={(e)=>setForm({...form,calories:e.target.value})}/>
 
             <div className="modal-actions">
-              <button
-                className="primary-btn"
-                onClick={handleAddWorkout}
-              >
-                Save
-              </button>
-
-              <button
-                className="icon-btn"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>
+              <button className="primary-btn" onClick={handleSave}>Save</button>
+              <button className="icon-btn" onClick={()=>setShowModal(false)}>Cancel</button>
             </div>
-
           </div>
         </div>
       )}
-
     </motion.div>
   )
 }
