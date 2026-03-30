@@ -12,6 +12,8 @@ export default function Suggestions() {
     soreness: "none",
   })
 
+  const [goal, setGoal] = useState("") // 🔥 NEW (for highlighting + backend)
+
   const [suggestion, setSuggestion] = useState(null)
   const [loading, setLoading] = useState(false)
 
@@ -23,27 +25,46 @@ export default function Suggestions() {
   }
 
   const applyPreset = (preset) => {
-    if (preset === "energy") {
-      setForm({ mood: "energetic", energy: 5, availableTime: 45, soreness: "none" })
+    setGoal(preset) // 🔥 sync highlight
+
+    if (preset === "high") {
+      setForm({
+        mood: "energetic",
+        energy: 5,
+        availableTime: 45,
+        soreness: "none",
+      })
     } else if (preset === "recovery") {
-      setForm({ mood: "tired", energy: 2, availableTime: 20, soreness: "moderate" })
+      setForm({
+        mood: "tired",
+        energy: 2,
+        availableTime: 20,
+        soreness: "moderate",
+      })
     } else {
-      setForm({ mood: "motivated", energy: 4, availableTime: 30, soreness: "mild" })
+      setForm({
+        mood: "motivated",
+        energy: 4,
+        availableTime: 30,
+        soreness: "mild",
+      })
     }
   }
 
-  // 🔥 SAFE SUBMIT (MAIN FIX)
+  // 🔥 FIXED SUBMIT
   const onSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setSuggestion(null)
 
     try {
-      const res = await getSuggestion(form)
+      const res = await getSuggestion({
+        ...form,
+        goal, // 🔥 IMPORTANT
+      })
 
       console.log("🔥 RAW RESPONSE:", res)
 
-      // ✅ handle ALL backend formats
       const normalized =
         res?.data || res?.plan || res?.suggestion || res || null
 
@@ -51,7 +72,7 @@ export default function Suggestions() {
         setSuggestion(normalized)
         setLoading(false)
         toast.success("Plan generated ✨")
-      }, 500)
+      }, 400)
 
     } catch (err) {
       console.error(err)
@@ -74,11 +95,30 @@ export default function Suggestions() {
           <p className="muted">Tell us how you feel</p>
         </div>
 
-        {/* PRESETS */}
-        <div className="preset-row">
-          <button onClick={() => applyPreset("energy")}>⚡ High Energy</button>
-          <button onClick={() => applyPreset("recovery")}>🧘 Recovery</button>
-          <button onClick={() => applyPreset("fatburn")}>🔥 Fat Burn</button>
+        {/* 🔥 NEW PREMIUM BUTTONS */}
+        <div className="preset-row flex gap-2 mb-3">
+
+          <button
+            onClick={() => applyPreset("high")}
+            className={`goal-btn ${goal === "high" ? "goal-yellow" : ""}`}
+          >
+            ⚡ High Energy
+          </button>
+
+          <button
+            onClick={() => applyPreset("recovery")}
+            className={`goal-btn ${goal === "recovery" ? "goal-green" : ""}`}
+          >
+            🧘 Recovery
+          </button>
+
+          <button
+            onClick={() => applyPreset("fatburn")}
+            className={`goal-btn ${goal === "fatburn" ? "goal-red" : ""}`}
+          >
+            🔥 Fat Burn
+          </button>
+
         </div>
 
         {/* FORM */}
@@ -167,7 +207,6 @@ export default function Suggestions() {
                 {suggestion?.description || "Stay consistent 💪"}
               </p>
 
-              {/* 🔥 SAFE EXERCISE RENDER */}
               <div className="exercise-list">
                 {(suggestion?.exercises || []).map((ex, i) => (
                   <div key={i} className="exercise-row">
