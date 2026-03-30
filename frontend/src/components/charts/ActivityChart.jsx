@@ -9,7 +9,7 @@ import {
 } from "recharts";
 
 export default function ActivityChart({ data }) {
-  // 🧠 If no data → show clean empty state
+  //  If no data → show clean empty state
   if (!data || data.length === 0) {
     return (
       <div className="card">
