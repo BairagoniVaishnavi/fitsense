@@ -1,38 +1,39 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { motion } from "framer-motion"
-import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi"
 import toast from "react-hot-toast"
 
 import {
-  getWorkouts,
-  deleteWorkout,
   createWorkout,
+  deleteWorkout,
+  getWorkouts,
+  toggleFavorite,
   updateWorkout,
 } from "../api/workoutApi"
 
 export default function Workouts() {
   const [workouts, setWorkouts] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  const [showModal, setShowModal] = useState(false)
-  const [editId, setEditId] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState("")
 
   const [form, setForm] = useState({
     title: "",
     type: "cardio",
-    intensity: "medium",
     duration: "",
     calories: "",
+    intensity: "medium",
+    date: "",
   })
 
-  // ================= FETCH =================
-  const fetchWorkouts = async () => {
+  const [editingId, setEditingId] = useState(null)
+  const [showModal, setShowModal] = useState(false)
+
+  // ================= LOAD =================
+  const load = async () => {
     try {
       setLoading(true)
       const res = await getWorkouts()
       setWorkouts(Array.isArray(res) ? res : [])
-    } catch (err) {
-      console.error(err)
+    } catch {
       toast.error("Failed to load workouts ❌")
     } finally {
       setLoading(false)
@@ -40,8 +41,72 @@ export default function Workouts() {
   }
 
   useEffect(() => {
-    fetchWorkouts()
+    load()
   }, [])
+
+  // ================= SEARCH =================
+  const filtered = useMemo(() => {
+    return workouts.filter((w) =>
+      w.title?.toLowerCase().includes(search.toLowerCase())
+    )
+  }, [workouts, search])
+
+  // ================= FORM =================
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const resetForm = () => {
+    setForm({
+      title: "",
+      type: "cardio",
+      duration: "",
+      calories: "",
+      intensity: "medium",
+      date: "",
+    })
+    setEditingId(null)
+  }
+
+  // ================= SUBMIT =================
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    const payload = {
+      title: form.title.trim(),
+      type: form.type,
+      duration: Number(form.duration),
+      calories: Number(form.calories),
+      intensity: form.intensity,
+      date: form.date ? new Date(form.date).toISOString() : new Date().toISOString(),
+    }
+
+    if (!payload.title || !payload.duration || !payload.calories) {
+      return toast.error("Fill all required fields ⚠️")
+    }
+
+    try {
+      if (editingId) {
+        const updated = await updateWorkout(editingId, payload)
+
+        setWorkouts((prev) =>
+          prev.map((w) => (w._id === editingId ? updated : w))
+        )
+
+        toast.success("Updated ✏️")
+      } else {
+        const created = await createWorkout(payload)
+        setWorkouts((prev) => [created, ...prev])
+        toast.success("Workout added 💪")
+      }
+
+      resetForm()
+      setShowModal(false)
+    } catch (err) {
+      console.log(err?.response?.data)
+      toast.error(err?.response?.data?.message || "Failed ❌")
+    }
+  }
 
   // ================= DELETE =================
   const handleDelete = async (id) => {
@@ -49,111 +114,68 @@ export default function Workouts() {
       await deleteWorkout(id)
       setWorkouts((prev) => prev.filter((w) => w._id !== id))
       toast.success("Deleted 🗑️")
-    } catch (err) {
-      console.error(err)
+    } catch {
+      toast.error("Delete failed ❌")
+    }
+  }
+
+  // ================= FAVORITE =================
+  const handleFavorite = async (id) => {
+    try {
+      const updated = await toggleFavorite(id)
+
+      setWorkouts((prev) =>
+        prev.map((w) => (w._id === id ? updated : w))
+      )
+
+      toast.success("Updated ❤️")
+    } catch {
       toast.error("Failed ❌")
     }
   }
 
-  // ================= CLOSE MODAL =================
-  const closeModal = () => {
-    setShowModal(false)
-    setEditId(null)
-    setForm({
-      title: "",
-      type: "cardio",
-      intensity: "medium",
-      duration: "",
-      calories: "",
-    })
-  }
-
-  // ================= ADD / EDIT =================
-  const handleSave = async () => {
-    try {
-      if (!form.title || !form.duration || !form.calories || !form.type) {
-        return toast.error("All fields required ⚠️")
-      }
-
-      const payload = {
-        title: form.title.trim(),
-        type: form.type,
-        intensity: form.intensity,
-        duration: Number(form.duration),
-        calories: Number(form.calories),
-      }
-
-      console.log("🚀 PAYLOAD:", payload)
-
-      if (editId) {
-        const updated = await updateWorkout(editId, payload)
-
-        setWorkouts((prev) =>
-          prev.map((w) => (w._id === editId ? updated : w))
-        )
-
-        toast.success("Updated ✏️")
-      } else {
-        const newWorkout = await createWorkout(payload)
-
-        setWorkouts((prev) => [newWorkout, ...prev])
-
-        toast.success("Workout added 💪")
-      }
-
-      closeModal()
-    } catch (err) {
-      console.error("❌ FULL ERROR:", err.response?.data || err.message)
-
-      toast.error(
-        err.response?.data?.message || "Failed to add workout ❌"
-      )
-    }
-  }
-
   // ================= EDIT =================
-  const openEdit = (w) => {
-    setEditId(w._id)
-
+  const handleEdit = (w) => {
     setForm({
       title: w.title || "",
       type: w.type || "cardio",
-      intensity: w.intensity || "medium",
       duration: w.duration || "",
       calories: w.calories || "",
+      intensity: w.intensity || "medium",
+      date: w.date ? w.date.slice(0, 10) : "",
     })
-
+    setEditingId(w._id)
     setShowModal(true)
   }
 
-  if (loading) return <div className="card">Loading...</div>
-
   return (
-    <motion.div className="stack" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    <motion.div className="stack">
 
       {/* HEADER */}
       <div className="workout-header">
-        <div>
-          <h2>🏋️ Your Workouts</h2>
-          <span className="muted">{workouts.length} sessions</span>
-        </div>
+        <h2>🏋️ Your Workouts</h2>
 
         <button className="primary-btn" onClick={() => setShowModal(true)}>
-          <FiPlus /> Add Workout
+          + Add Workout
         </button>
       </div>
 
-      {/* EMPTY */}
-      {workouts.length === 0 ? (
+      {/* SEARCH */}
+      <input
+        placeholder="Search workouts..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      {/* LIST */}
+      {loading ? (
+        <div className="card">Loading...</div>
+      ) : filtered.length === 0 ? (
         <div className="card">No workouts yet 💪</div>
       ) : (
         <div className="grid-2">
-          {workouts.map((w) => (
-            <motion.div
-              key={w._id}
-              className="card workout-card"
-              whileHover={{ scale: 1.03 }}
-            >
+          {filtered.map((w) => (
+            <motion.div key={w._id} className="card workout-card">
               <h3>{w.title}</h3>
 
               <p className="muted">
@@ -166,15 +188,10 @@ export default function Workouts() {
               </div>
 
               <div className="workout-actions">
-                <button className="icon-btn" onClick={() => openEdit(w)}>
-                  <FiEdit />
-                </button>
-
-                <button
-                  className="icon-btn danger"
-                  onClick={() => handleDelete(w._id)}
-                >
-                  <FiTrash2 />
+                <button onClick={() => handleEdit(w)}>✏️</button>
+                <button onClick={() => handleDelete(w._id)}>🗑</button>
+                <button onClick={() => handleFavorite(w._id)}>
+                  {w.isFavorite ? "❤️" : "🤍"}
                 </button>
               </div>
             </motion.div>
@@ -185,63 +202,24 @@ export default function Workouts() {
       {/* MODAL */}
       {showModal && (
         <div className="modal">
-          <motion.div
-            className="modal-box"
-            initial={{ scale: 0.85, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-          >
-            <h3>{editId ? "Edit Workout" : "Add Workout"}</h3>
+          <div className="modal-box">
+            <h3>{editingId ? "Edit Workout" : "Add Workout"}</h3>
 
-            <input
-              placeholder="Workout title"
-              value={form.title}
-              onChange={(e) =>
-                setForm({ ...form, title: e.target.value })
-              }
-            />
+            <input name="title" value={form.title} onChange={handleChange} placeholder="Title" />
 
-            {/* 🔥 TYPE IS NOW CLEAR + REQUIRED */}
-            <select
-              value={form.type}
-              onChange={(e) =>
-                setForm({ ...form, type: e.target.value })
-              }
-            >
-              <option value="">Select Type</option>
+            <select name="type" value={form.type} onChange={handleChange}>
               <option value="cardio">Cardio</option>
               <option value="strength">Strength</option>
-              <option value="hiit">HIIT</option>
               <option value="yoga">Yoga</option>
-              <option value="cycling">Cycling</option>
-              <option value="sports">Sports</option>
             </select>
 
-            <input
-              placeholder="Duration (minutes)"
-              value={form.duration}
-              onChange={(e) =>
-                setForm({ ...form, duration: e.target.value })
-              }
-            />
+            <input name="duration" value={form.duration} onChange={handleChange} placeholder="Duration" />
+            <input name="calories" value={form.calories} onChange={handleChange} placeholder="Calories" />
 
-            <input
-              placeholder="Calories burned"
-              value={form.calories}
-              onChange={(e) =>
-                setForm({ ...form, calories: e.target.value })
-              }
-            />
-
-            <div className="modal-actions">
-              <button className="primary-btn" onClick={handleSave}>
-                Save
-              </button>
-
-              <button className="icon-btn" onClick={closeModal}>
-                Cancel
-              </button>
-            </div>
-          </motion.div>
+            <button className="primary-btn" onClick={handleSubmit}>
+              Save
+            </button>
+          </div>
         </div>
       )}
     </motion.div>
