@@ -5,11 +5,11 @@ import { motion } from "framer-motion"
 import toast from "react-hot-toast"
 
 const goals = [
-  "weight_loss",
-  "muscle_gain",
-  "endurance",
-  "flexibility",
-  "general_fitness",
+  { label: "Weight Loss", value: "weight_loss" },
+  { label: "Muscle Gain", value: "muscle_gain" },
+  { label: "Endurance", value: "endurance" },
+  { label: "Flexibility", value: "flexibility" },
+  { label: "General Fitness", value: "general_fitness" },
 ]
 
 export default function Register() {
@@ -26,6 +26,7 @@ export default function Register() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
+  // HANDLE INPUT
   const onChange = (e) => {
     setForm((prev) => ({
       ...prev,
@@ -33,21 +34,33 @@ export default function Register() {
     }))
   }
 
+  // VALIDATION
   const validate = () => {
     if (!form.name.trim()) return "Name is required"
-    if (form.name.length < 2) return "Name must be at least 2 characters"
+    if (form.name.trim().length < 2) return "Name must be at least 2 characters"
+
     if (!form.email.trim()) return "Email is required"
     if (!form.email.includes("@")) return "Enter a valid email"
+
     if (!form.password) return "Password is required"
-    if (form.password.length < 6) return "Password must be at least 6 characters"
+    if (form.password.length < 6)
+      return "Password must be at least 6 characters"
+
     return null
   }
 
+  // SUBMIT
   const onSubmit = async (e) => {
     e.preventDefault()
 
-    // 🔍 DEBUG — SEE EXACT PAYLOAD
-    console.log("🚀 REGISTER PAYLOAD:", form)
+    // CLEAN PAYLOAD (VERY IMPORTANT)
+    const payload = {
+      ...form,
+      name: form.name.trim(),
+      email: form.email.trim(),
+    }
+
+    console.log("🚀 REGISTER PAYLOAD:", payload)
 
     const validationError = validate()
     if (validationError) {
@@ -59,7 +72,7 @@ export default function Register() {
     setLoading(true)
 
     try {
-      const res = await register(form)
+      const res = await register(payload)
 
       console.log("✅ REGISTER RESPONSE:", res)
 
@@ -93,6 +106,7 @@ export default function Register() {
         <p className="muted">Start your fitness journey today.</p>
 
         <form className="form" onSubmit={onSubmit}>
+          {/* NAME */}
           <label>
             Name
             <input
@@ -100,9 +114,11 @@ export default function Register() {
               name="name"
               value={form.name}
               onChange={onChange}
+              placeholder="Enter your name"
             />
           </label>
 
+          {/* EMAIL */}
           <label>
             Email
             <input
@@ -110,9 +126,11 @@ export default function Register() {
               name="email"
               value={form.email}
               onChange={onChange}
+              placeholder="Enter your email"
             />
           </label>
 
+          {/* PASSWORD */}
           <label>
             Password
             <input
@@ -120,9 +138,11 @@ export default function Register() {
               name="password"
               value={form.password}
               onChange={onChange}
+              placeholder="Enter your password"
             />
           </label>
 
+          {/* FITNESS GOAL */}
           <label>
             Fitness goal
             <select
@@ -131,16 +151,21 @@ export default function Register() {
               onChange={onChange}
             >
               {goals.map((goal) => (
-                <option key={goal} value={goal}>
-                  {goal.replace("_", " ")} {/* display only */}
+                <option key={goal.value} value={goal.value}>
+                  {goal.label}
                 </option>
               ))}
             </select>
           </label>
 
+          {/* ERROR */}
           {error && <div className="alert">{error}</div>}
 
-          <button className="btn primary" disabled={loading}>
+          {/* BUTTON */}
+          <button
+            className="btn primary"
+            disabled={loading}
+          >
             {loading ? "Creating account..." : "Register"}
           </button>
         </form>
