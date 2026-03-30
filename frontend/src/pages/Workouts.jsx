@@ -55,6 +55,19 @@ export default function Workouts() {
     }
   }
 
+  // ================= CLOSE MODAL =================
+  const closeModal = () => {
+    setShowModal(false)
+    setEditId(null)
+    setForm({
+      title: "",
+      category: "cardio",
+      intensity: "medium",
+      duration: "",
+      calories: "",
+    })
+  }
+
   // ================= ADD / EDIT =================
   const handleSave = async () => {
     try {
@@ -62,8 +75,14 @@ export default function Workouts() {
         return toast.error("Fill all fields ⚠️")
       }
 
+      const payload = {
+        ...form,
+        duration: Number(form.duration),
+        calories: Number(form.calories),
+      }
+
       if (editId) {
-        const updated = await updateWorkout(editId, form)
+        const updated = await updateWorkout(editId, payload)
 
         setWorkouts((prev) =>
           prev.map((w) => (w._id === editId ? updated : w))
@@ -71,29 +90,21 @@ export default function Workouts() {
 
         toast.success("Updated ✏️")
       } else {
-        const newWorkout = await createWorkout(form)
+        const newWorkout = await createWorkout(payload)
 
         setWorkouts((prev) => [newWorkout, ...prev])
 
         toast.success("Added 💪")
       }
 
-      // reset
-      setShowModal(false)
-      setEditId(null)
-      setForm({
-        title: "",
-        category: "cardio",
-        intensity: "medium",
-        duration: "",
-        calories: "",
-      })
+      closeModal()
     } catch (err) {
-      console.error(err)
+      console.error("FULL ERROR:", err.response?.data || err.message)
       toast.error("Failed ❌")
     }
   }
 
+  // ================= EDIT =================
   const openEdit = (w) => {
     setEditId(w._id)
     setForm({
@@ -109,8 +120,11 @@ export default function Workouts() {
   if (loading) return <div className="card">Loading...</div>
 
   return (
-    <motion.div className="stack" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      
+    <motion.div
+      className="stack"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       {/* HEADER */}
       <div className="workout-header">
         <div>
@@ -135,7 +149,9 @@ export default function Workouts() {
               whileHover={{ scale: 1.02 }}
             >
               <h3>{w.title}</h3>
-              <p className="muted">{w.category} • {w.intensity}</p>
+              <p className="muted">
+                {w.category} • {w.intensity}
+              </p>
 
               <div className="recent-meta">
                 <span>⏱ {w.duration} min</span>
@@ -143,7 +159,10 @@ export default function Workouts() {
               </div>
 
               <div className="workout-actions">
-                <button className="icon-btn" onClick={() => openEdit(w)}>
+                <button
+                  className="icon-btn"
+                  onClick={() => openEdit(w)}
+                >
                   <FiEdit />
                 </button>
 
@@ -162,25 +181,35 @@ export default function Workouts() {
       {/* MODAL */}
       {showModal && (
         <div className="modal">
-          <div className="modal-box">
+          <motion.div
+            className="modal-box"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+          >
             <h3>{editId ? "Edit Workout" : "Add Workout"}</h3>
 
             <input
               placeholder="Title"
               value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, title: e.target.value })
+              }
             />
 
             <input
               placeholder="Duration (min)"
               value={form.duration}
-              onChange={(e) => setForm({ ...form, duration: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, duration: e.target.value })
+              }
             />
 
             <input
               placeholder="Calories"
               value={form.calories}
-              onChange={(e) => setForm({ ...form, calories: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, calories: e.target.value })
+              }
             />
 
             <div className="modal-actions">
@@ -188,14 +217,11 @@ export default function Workouts() {
                 Save
               </button>
 
-              <button
-                className="icon-btn"
-                onClick={() => setShowModal(false)}
-              >
+              <button className="icon-btn" onClick={closeModal}>
                 Cancel
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </motion.div>
