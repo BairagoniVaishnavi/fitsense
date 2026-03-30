@@ -27,13 +27,16 @@ export default function Register() {
   const [loading, setLoading] = useState(false)
 
   const onChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }))
   }
 
   const validate = () => {
-    if (!form.name) return "Name is required"
+    if (!form.name.trim()) return "Name is required"
     if (form.name.length < 2) return "Name must be at least 2 characters"
-    if (!form.email) return "Email is required"
+    if (!form.email.trim()) return "Email is required"
     if (!form.email.includes("@")) return "Enter a valid email"
     if (!form.password) return "Password is required"
     if (form.password.length < 6) return "Password must be at least 6 characters"
