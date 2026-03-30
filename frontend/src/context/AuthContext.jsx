@@ -20,9 +20,10 @@ export function AuthProvider({ children }) {
         setLoading(false)
         return
       }
+
       try {
         const res = await getCurrentUser()
-        setUser(res.data?.data) // ✅ FIXED
+        setUser(res.data) // ✅ CORRECT
       } catch {
         localStorage.removeItem('token')
         setToken('')
@@ -31,18 +32,20 @@ export function AuthProvider({ children }) {
         setLoading(false)
       }
     }
+
     boot()
   }, [token])
 
   const login = async (payload) => {
     const res = await loginUser(payload)
 
-    const nextToken = res.data?.data?.token || '' // ✅ FIXED
+    const userData = res.data // ✅ CORRECT
+    const nextToken = userData?.token
 
     if (nextToken) {
       localStorage.setItem('token', nextToken)
       setToken(nextToken)
-      setUser(res.data?.data) // ✅ FIXED
+      setUser(userData)
     }
 
     return res
@@ -51,12 +54,13 @@ export function AuthProvider({ children }) {
   const register = async (payload) => {
     const res = await registerUser(payload)
 
-    const nextToken = res.data?.data?.token || '' // ✅ FIXED
+    const userData = res.data // ✅ CORRECT
+    const nextToken = userData?.token
 
     if (nextToken) {
       localStorage.setItem('token', nextToken)
       setToken(nextToken)
-      setUser(res.data?.data) // ✅ FIXED
+      setUser(userData)
     }
 
     return res
@@ -70,7 +74,7 @@ export function AuthProvider({ children }) {
 
   const updateProfile = async (payload) => {
     const res = await apiUpdateProfile(payload)
-    setUser(res.data?.data)
+    setUser(res.data)
     return res
   }
 
@@ -88,7 +92,6 @@ export function AuthProvider({ children }) {
       logout,
       updateProfile,
       changePassword,
-      setUser,
     }),
     [user, token, loading]
   )
