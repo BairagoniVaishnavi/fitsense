@@ -46,7 +46,7 @@ export default function Login() {
     try {
       await login(form)
 
-      toast.success("Welcome back 🔥")
+      toast.success("Welcome back ")
       navigate("/")
     } catch (err) {
       const msg = err?.message || "Login failed"
@@ -65,7 +65,7 @@ export default function Login() {
         animate={{ opacity: 1, y: 0 }}
       >
         <p className="eyebrow">FitSense</p>
-        <h1>Welcome Back 👋</h1>
+        <h1>Welcome Back </h1>
         <p className="muted">Let’s get you moving again.</p>
 
         <form className="form" onSubmit={onSubmit}>
