@@ -16,7 +16,10 @@ export default function Suggestions() {
   const [loading, setLoading] = useState(false)
 
   const onChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }))
   }
 
   const applyPreset = (preset) => {
@@ -29,6 +32,7 @@ export default function Suggestions() {
     }
   }
 
+  // 🔥 SAFE SUBMIT (MAIN FIX)
   const onSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -37,12 +41,20 @@ export default function Suggestions() {
     try {
       const res = await getSuggestion(form)
 
+      console.log("🔥 RAW RESPONSE:", res)
+
+      // ✅ handle ALL backend formats
+      const normalized =
+        res?.data || res?.plan || res?.suggestion || res || null
+
       setTimeout(() => {
-        setSuggestion(res) // ✅ FIXED (no res.data)
+        setSuggestion(normalized)
         setLoading(false)
         toast.success("Plan generated ✨")
-      }, 600)
-    } catch {
+      }, 500)
+
+    } catch (err) {
+      console.error(err)
       toast.error("Failed ❌")
       setLoading(false)
     }
@@ -71,7 +83,6 @@ export default function Suggestions() {
 
         {/* FORM */}
         <form className="form-grid-2" onSubmit={onSubmit}>
-
           <div>
             <label>Mood</label>
             <select name="mood" value={form.mood} onChange={onChange}>
@@ -85,17 +96,30 @@ export default function Suggestions() {
 
           <div>
             <label>Energy</label>
-            <input type="number" name="energy" value={form.energy} onChange={onChange} />
+            <input
+              type="number"
+              name="energy"
+              value={form.energy}
+              onChange={onChange}
+            />
           </div>
 
           <div>
             <label>Time (min)</label>
-            <input name="availableTime" value={form.availableTime} onChange={onChange} />
+            <input
+              name="availableTime"
+              value={form.availableTime}
+              onChange={onChange}
+            />
           </div>
 
           <div>
             <label>Soreness</label>
-            <select name="soreness" value={form.soreness} onChange={onChange}>
+            <select
+              name="soreness"
+              value={form.soreness}
+              onChange={onChange}
+            >
               <option>none</option>
               <option>mild</option>
               <option>moderate</option>
@@ -117,7 +141,12 @@ export default function Suggestions() {
 
           {/* LOADING */}
           {loading && (
-            <motion.div key="loading" className="center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <motion.div
+              key="loading"
+              className="center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
               <div className="spinner"></div>
               <p className="muted">Building your workout...</p>
             </motion.div>
@@ -125,14 +154,26 @@ export default function Suggestions() {
 
           {/* RESULT */}
           {!loading && suggestion && (
-            <motion.div key="result" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1 }}>
-              <h4>{suggestion.title}</h4>
-              <p className="muted">{suggestion.description}</p>
+            <motion.div
+              key="result"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1 }}
+            >
+              <h4 className="plan-title">
+                {suggestion?.title || "Workout Plan"}
+              </h4>
 
+              <p className="muted plan-desc">
+                {suggestion?.description || "Stay consistent 💪"}
+              </p>
+
+              {/* 🔥 SAFE EXERCISE RENDER */}
               <div className="exercise-list">
-                {suggestion.exercises?.map((ex, i) => (
+                {(suggestion?.exercises || []).map((ex, i) => (
                   <div key={i} className="exercise-row">
-                    <span>{typeof ex === "string" ? ex : ex.name}</span>
+                    <span>
+                      {typeof ex === "string" ? ex : ex?.name || "Exercise"}
+                    </span>
                     <span className="tag">3 sets</span>
                   </div>
                 ))}
