@@ -1,6 +1,6 @@
 import api from './axios'
 
-// 🔥 universal normalizer
+// universal normalizer
 const normalize = (res) => {
   return res?.data || res?.workouts || res || []
 }
