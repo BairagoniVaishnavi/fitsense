@@ -46,6 +46,9 @@ export default function Register() {
   const onSubmit = async (e) => {
     e.preventDefault()
 
+    // 🔍 DEBUG — SEE EXACT PAYLOAD
+    console.log("🚀 REGISTER PAYLOAD:", form)
+
     const validationError = validate()
     if (validationError) {
       setError(validationError)
@@ -56,12 +59,21 @@ export default function Register() {
     setLoading(true)
 
     try {
-      await register(form)
+      const res = await register(form)
 
-      toast.success("Account created ")
+      console.log("✅ REGISTER RESPONSE:", res)
+
+      toast.success("Account created 🎉")
       navigate("/")
     } catch (err) {
-      const msg = err?.message || "Registration failed"
+      console.log("❌ FULL ERROR:", err?.response?.data || err)
+
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.errors?.[0]?.msg ||
+        err?.message ||
+        "Registration failed"
+
       setError(msg)
       toast.error(msg)
     } finally {
@@ -77,7 +89,7 @@ export default function Register() {
         animate={{ opacity: 1, y: 0 }}
       >
         <p className="eyebrow">FitSense</p>
-        <h1>Create Account </h1>
+        <h1>Create Account ✨</h1>
         <p className="muted">Start your fitness journey today.</p>
 
         <form className="form" onSubmit={onSubmit}>
@@ -120,7 +132,7 @@ export default function Register() {
             >
               {goals.map((goal) => (
                 <option key={goal} value={goal}>
-                  {goal.replace("_", " ")}
+                  {goal.replace("_", " ")} {/* display only */}
                 </option>
               ))}
             </select>
