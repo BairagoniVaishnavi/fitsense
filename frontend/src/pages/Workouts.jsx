@@ -17,9 +17,10 @@ export default function Workouts() {
   const [showModal, setShowModal] = useState(false)
   const [editId, setEditId] = useState(null)
 
+  // 🔥 FIXED: category → type
   const [form, setForm] = useState({
     title: "",
-    category: "cardio",
+    type: "cardio",          // ✅ IMPORTANT FIX
     intensity: "medium",
     duration: "",
     calories: "",
@@ -61,7 +62,7 @@ export default function Workouts() {
     setEditId(null)
     setForm({
       title: "",
-      category: "cardio",
+      type: "cardio",       // ✅ FIXED
       intensity: "medium",
       duration: "",
       calories: "",
@@ -75,8 +76,11 @@ export default function Workouts() {
         return toast.error("Fill all fields ⚠️")
       }
 
+      // 🔥 FIXED PAYLOAD
       const payload = {
-        ...form,
+        title: form.title,
+        type: form.type,                    // ✅ REQUIRED BY BACKEND
+        intensity: form.intensity,
         duration: Number(form.duration),
         calories: Number(form.calories),
       }
@@ -107,13 +111,15 @@ export default function Workouts() {
   // ================= EDIT =================
   const openEdit = (w) => {
     setEditId(w._id)
+
     setForm({
       title: w.title || "",
-      category: w.category || "cardio",
+      type: w.type || "cardio",      // ✅ FIXED
       intensity: w.intensity || "medium",
       duration: w.duration || "",
       calories: w.calories || "",
     })
+
     setShowModal(true)
   }
 
@@ -149,8 +155,10 @@ export default function Workouts() {
               whileHover={{ scale: 1.02 }}
             >
               <h3>{w.title}</h3>
+
+              {/* 🔥 FIXED DISPLAY */}
               <p className="muted">
-                {w.category} • {w.intensity}
+                {w.type} • {w.intensity}
               </p>
 
               <div className="recent-meta">
@@ -195,6 +203,19 @@ export default function Workouts() {
                 setForm({ ...form, title: e.target.value })
               }
             />
+
+            {/* 🔥 OPTIONAL TYPE SELECT (RECOMMENDED) */}
+            <select
+              value={form.type}
+              onChange={(e) =>
+                setForm({ ...form, type: e.target.value })
+              }
+            >
+              <option value="cardio">Cardio</option>
+              <option value="strength">Strength</option>
+              <option value="hiit">HIIT</option>
+              <option value="yoga">Yoga</option>
+            </select>
 
             <input
               placeholder="Duration (min)"
